@@ -1,3 +1,9 @@
+qgis (2.4.0~c2c+2) wheezy; urgency=low
+
+  * c2c build
+
+ -- Stéphane Brunner <stephane.brunner@camptocamp.com>  Wed, 04 Sep 2014 14:51:07 +0200
+
 qgis (2.4.0) UNRELEASED; urgency=medium
 
   * Release of 2.4
