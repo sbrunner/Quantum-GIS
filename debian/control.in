@@ -1,7 +1,7 @@
 Source: qgis
 Maintainer: QGIS developers <qgis-developer@lists.osgeo.org>
 Uploaders: Jürgen E. Fischer <jef@norbit.de>
-Section: science
+Section: qgis-2.6/science
 Priority: optional
 Build-Depends:
  bison,
@@ -94,7 +94,7 @@ Description: QGIS - architecture-independent data
 
 Package: libqgis-core{QGIS_ABI}
 Architecture: any
-Section: libs
+Section: qgis-2.6/libs
 Depends:
  ${shlibs:Depends},
  ${misc:Depends}
@@ -107,7 +107,7 @@ Description: QGIS - shared core library
 
 Package: libqgis-gui{QGIS_ABI}
 Architecture: any
-Section: libs
+Section: qgis-2.6/libs
 Depends:
  ${shlibs:Depends},
  ${misc:Depends}
@@ -121,7 +121,7 @@ Description: QGIS - shared gui library
 
 Package: libqgis-analysis{QGIS_ABI}
 Architecture: any
-Section: libs
+Section: qgis-2.6/libs
 Depends:
  ${shlibs:Depends},
  ${misc:Depends}
@@ -134,7 +134,7 @@ Description: QGIS - shared analysis library
 
 Package: libqgis-networkanalysis{QGIS_ABI}
 Architecture: any
-Section: libs
+Section: qgis-2.6/libs
 Depends:
  ${shlibs:Depends},
  ${misc:Depends}
@@ -147,7 +147,7 @@ Description: QGIS - shared network analysis library
 
 Package: libqgisgrass{QGIS_ABI}
 Architecture: any
-Section: libs
+Section: qgis-2.6/libs
 Depends:
  ${shlibs:Depends},
  ${misc:Depends}
@@ -160,7 +160,7 @@ Description: QGIS - shared grass library
 
 Package: libqgispython{QGIS_ABI}
 Architecture: any
-Section: libs
+Section: qgis-2.6/libs
 Depends:
  ${shlibs:Depends},
  ${misc:Depends}
@@ -173,7 +173,7 @@ Description: QGIS - shared Python library
 
 Package: libqgis-dev
 Architecture: any
-Section: libdevel
+Section: qgis-2.6/libdevel
 Depends:
  grass-dev,
  libexpat1-dev,
@@ -240,7 +240,7 @@ Description: GRASS plugin for QGIS - architecture-independent data
 
 Package: python-qgis
 Architecture: any
-Section: python
+Section: qgis-2.6/python
 Depends:
  python-qt4,
  python-sip,
@@ -270,7 +270,7 @@ Description: Python bindings to QGIS
 
 Package: python-qgis-common
 Architecture: all
-Section: python
+Section: qgis-2.6/python
 Provides: ${python:Provides}
 Depends:
  gdal-bin,
@@ -343,7 +343,7 @@ Description: QGIS custom widgets for Qt Designer
 
 Package: qgis-api-doc
 Architecture: all
-Section: doc
+Section: qgis-2.6/doc
 Depends:
  libjs-jquery,
  ${misc:Depends}
@@ -381,7 +381,7 @@ Description: OSG globe plugin for QGIS - architecture-independent data
 #sid-oracle#Package: qgis-oracle-provider
 #sid-oracle#Architecture: any
 #sid-oracle#Depends: ${shlibs:Depends}, ${misc:Depends}
-#sid-oracle#Section: contrib/database
+#sid-oracle#Section: qgis-2.6/contrib/database
 #sid-oracle#Description: QGIS oracle provider
 #sid-oracle# QGIS is a Geographic Information System (GIS) which manages, analyzes and
 #sid-oracle# display databases of geographic information.
