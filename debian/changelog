@@ -1,4 +1,10 @@
-qgis (2.1.0) UNRELEASED; urgency=low
+qgis (2.1.0~dev2014-01-15-c2c+1) wheezy; urgency=low
+
+  * c2c build
+
+ -- Stéphane Brunner <stephane.brunner@camptocamp.com>  Fri, 17 Jan 2014 15:43:53 +0100
+
+qgis (2.1.0) UNRELEASED; urgency=low 
 
   * new development version 2.1 after branch of 2.0
   * drop qgis_icon.xpm and use "upstream" version

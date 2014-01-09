@@ -1,5 +1,5 @@
 Source: qgis
-Section: science
+Section: sig
 Priority: extra
 Maintainer: QGIS developers <qgis-developer@lists.osgeo.org>
 Build-Depends:
@@ -81,7 +81,6 @@ Description: QGIS - shared libraries
 
 Package: libqgis-dev
 Architecture: any
-Section: libdevel
 Depends:
  grass-dev,
  libexpat1-dev,
@@ -128,7 +127,6 @@ Description: GRASS plugin for QGIS - architecture-independent data
  with the QGIS GRASS plugin.
 
 Package: python-qgis
-Section: python
 Architecture: any
 Depends: python-qt4 (>=4.1.0), python-sip (>= 4.5.0), python-qgis-common (= ${source:Version}),
 	python-psycopg2, python-qscintilla2,
@@ -142,7 +140,6 @@ Description: Python bindings to QGIS
  This package contains the files for the Python support.
 
 Package: python-qgis-common
-Section: python
 Architecture: all
 Provides: ${python:Provides}
 Depends: gdal-bin, python-gdal, python-matplotlib, ${python:Depends}, ${misc:Depends}, ${sip:Depends}
@@ -197,7 +194,6 @@ Description: QGIS sql anywhere plugin and provider
 
 Package: qgis-api-doc
 Architecture: all
-Section: doc
 Depends: libjs-jquery
 Description: QGIS API documentation
  QGIS is a Geographic Information System (GIS) which manages, analyzes and
