@@ -1,0 +1,2 @@
+git-pbuilder-update.sh
+DIST=wheezy ARCH=amd64 git-buildpackage --git-export-dir=/home/sbrunner/build-area/qgis --git-no-pristine-tar --git-upstream-branch=c2c-build --git-upstream-tree=BRANCH --git-debian-branch=c2c-build
