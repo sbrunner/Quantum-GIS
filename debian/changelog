@@ -1,3 +1,9 @@
+qgis (2.2.0-3-c2c+1) wheezy; urgency=low
+
+  * c2c build
+
+ -- Stéphane Brunner <stephane.brunner@camptocamp.com>  Wed, 03 Sep 2014 14:51:07 +0200
+
 qgis (2.2.0-3) UNRELEASED; urgency=medium
 
   * fix python-pyspatialite dependency on trusty
