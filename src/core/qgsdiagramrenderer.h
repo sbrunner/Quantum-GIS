@@ -360,21 +360,35 @@ class CORE_EXPORT QgsDiagramSettings
       Right
     };
 
+    /**
+     * Diagram size legend type
+     * @note added in QGIS 3.0
+     */
+    enum SizeLegendType
+    {
+      ConcentricBottom,
+      ConcentricCenter,
+      ConcentricTop,
+      Multiple
+    };
+
     QgsDiagramSettings()
-      : enabled( true )
-      , sizeType( QgsUnitTypes::RenderMillimeters )
-      , lineSizeUnit( QgsUnitTypes::RenderMillimeters )
-      , penWidth( 0.0 )
-      , labelPlacementMethod( QgsDiagramSettings::Height )
-      , diagramOrientation( QgsDiagramSettings::Up )
-      , barWidth( 5.0 )
-      , transparency( 0 )
-      , scaleByArea( true )
-      , angleOffset( 90 * 16 ) //top
-      , scaleBasedVisibility( false )
-      , minScaleDenominator( -1 )
-      , maxScaleDenominator( -1 )
-      , minimumSize( 0.0 )
+        : enabled( true )
+        , sizeType( QgsUnitTypes::RenderMillimeters )
+        , lineSizeUnit( QgsUnitTypes::RenderMillimeters )
+        , penWidth( 0.0 )
+        , labelPlacementMethod( QgsDiagramSettings::Height )
+        , diagramOrientation( QgsDiagramSettings::Up )
+        , barWidth( 5.0 )
+        , transparency( 0 )
+        , scaleByArea( true )
+        , angleOffset( 90 * 16 ) //top
+        , scaleBasedVisibility( false )
+        , minScaleDenominator( -1 )
+        , maxScaleDenominator( -1 )
+        , minimumSize( 0.0 )
+        , sizeAttributeLabel()
+        , sizeDiagramLegendType( QgsDiagramSettings::ConcentricBottom )
     {}
     bool enabled;
     QFont font;
@@ -430,6 +444,10 @@ class CORE_EXPORT QgsDiagramSettings
      */
     QList< QgsLayerTreeModelLegendNode * > legendItems( QgsLayerTreeLayer *nodeLayer ) const;
 
+    QString sizeAttributeLabel;
+    SizeLegendType sizeDiagramLegendType;
+    QList<double> sizeRules;
+
 };
 
 /** \ingroup core
@@ -460,7 +478,6 @@ class CORE_EXPORT QgsDiagramInterpolationSettings
 class CORE_EXPORT QgsDiagramRenderer
 {
   public:
-
     QgsDiagramRenderer();
     virtual ~QgsDiagramRenderer();
 
@@ -507,20 +524,23 @@ class CORE_EXPORT QgsDiagramRenderer
      */
     virtual void writeXml( QDomElement &layerElem, QDomDocument &doc, const QgsVectorLayer *layer ) const = 0;
 
-    /** Returns list of legend nodes for the diagram
+    /**
+     * Returns list of legend nodes for the diagram
      * @note caller is responsible for deletion of QgsLayerTreeModelLegendNodes
      * @note added in 2.10
      */
     virtual QList< QgsLayerTreeModelLegendNode * > legendItems( QgsLayerTreeLayer *nodeLayer ) const;
 
-    /** Returns true if renderer will show legend items for diagram attributes.
+    /**
+     * Returns true if renderer will show legend items for diagram attributes.
      * @note added in QGIS 2.16
      * @see setAttributeLegend()
      * @see sizeLegend()
      */
     bool attributeLegend() const { return mShowAttributeLegend; }
 
-    /** Sets whether the renderer will show legend items for diagram attributes.
+    /**
+     * Sets whether the renderer will show legend items for diagram attributes.
      * @param enabled set to true to show diagram attribute legend
      * @note added in QGIS 2.16
      * @see attributeLegend()
@@ -528,7 +548,8 @@ class CORE_EXPORT QgsDiagramRenderer
      */
     void setAttributeLegend( bool enabled ) { mShowAttributeLegend = enabled; }
 
-    /** Returns true if renderer will show legend items for diagram sizes.
+    /**
+     * Returns true if renderer will show legend items for diagram sizes.
      * @note added in QGIS 2.16
      * @see setSizeLegend()
      * @see attributeLegend()
@@ -536,7 +557,8 @@ class CORE_EXPORT QgsDiagramRenderer
      */
     bool sizeLegend() const { return mShowSizeLegend; }
 
-    /** Sets whether the renderer will show legend items for diagram sizes.
+    /**
+     * Sets whether the renderer will show legend items for diagram sizes.
      * @param enabled set to true to show diagram size legend
      * @note added in QGIS 2.16
      * @see sizeLegend()
@@ -545,26 +567,73 @@ class CORE_EXPORT QgsDiagramRenderer
      */
     void setSizeLegend( bool enabled ) { mShowSizeLegend = enabled; }
 
-    /** Returns the marker symbol used for rendering the diagram size legend.
+    /**
+     * Returns the marker symbol used for rendering the diagram size legend.
      * @note added in QGIS 2.16
      * @see setSizeLegendSymbol()
      * @see sizeLegend()
      */
     QgsMarkerSymbol *sizeLegendSymbol() const { return mSizeLegendSymbol.get(); }
 
-    /** Sets the marker symbol used for rendering the diagram size legend.
+    /**
+     * Sets the marker symbol used for rendering the diagram size legend.
      * @param symbol marker symbol, ownership is transferred to the renderer.
      * @note added in QGIS 2.16
      * @see sizeLegendSymbol()
      * @see setSizeLegend()
      */
-    void setSizeLegendSymbol( QgsMarkerSymbol *symbol ) { mSizeLegendSymbol.reset( symbol ); }
+    virtual void setSizeLegendSymbol( QgsMarkerSymbol* symbol ) { mSizeLegendSymbol.reset( symbol ); }
+
+    /**
+     * Set the label uset as title or the size attribute
+     * @brief setSizeLabel
+     * @note added in QGIS 3.0
+     * @param label
+     */
+    void setSizeLabel( QString label ) { mSizeLabel = label; }
+
+    /**
+     * @brief sizeLabel
+     * @note added in QGIS 3.0
+     * @return
+     */
+    QString sizeLabel( ) const { return mSizeLabel; }
+
+    /**
+     * The size class used tor the legend (label, value)
+     * @brief setSizeRules
+     * @note added in QGIS 3.0
+     * @param rules
+     */
+    void setSizeRules( QList< double > rules ) { mSizeRules = rules; }
+
+    /**
+     * @brief sizeRules
+     * @note added in QGIS 3.0
+     * @return
+     */
+    QList< double > sizeRules() const { return mSizeRules; }
+
+    /**
+     * @brief setSizeLegendType
+     * @note added in QGIS 3.0
+     * @param type
+     */
+    void setSizeLegendType( QgsDiagramSettings::SizeLegendType type ) { mSizeLegendType = type; }
+
+    /**
+     * @brief sizeLegendType
+     * @note added in QGIS 3.0
+     * @return
+     */
+    QgsDiagramSettings::SizeLegendType sizeLegendType() const { return mSizeLegendType; }
 
   protected:
     QgsDiagramRenderer( const QgsDiagramRenderer &other );
     QgsDiagramRenderer &operator=( const QgsDiagramRenderer &other );
 
-    /** Returns diagram settings for a feature (or false if the diagram for the feature is not to be rendered). Used internally within renderDiagram()
+    /**
+     * Returns diagram settings for a feature (or false if the diagram for the feature is not to be rendered). Used internally within renderDiagram()
      * @param feature the feature
      * @param c render context
      * @param s out: diagram settings for the feature
@@ -573,6 +642,13 @@ class CORE_EXPORT QgsDiagramRenderer
 
     //! Returns size of the diagram (in painter units) or an invalid size in case of error
     virtual QSizeF diagramSize( const QgsFeature &features, const QgsRenderContext &c ) const = 0;
+
+    /**
+     * Create the symbol
+     * @param sizeLegendSymbolElem
+     * @return
+     */
+    virtual QgsMarkerSymbol* createSymbol( QDomElement sizeLegendSymbolElem ) const;
 
     //! Converts size from mm to map units
     void convertSizeToMapUnits( QSizeF &size, const QgsRenderContext &context ) const;
@@ -605,11 +681,30 @@ class CORE_EXPORT QgsDiagramRenderer
 
     //! Marker symbol to use in size legends
     std::unique_ptr< QgsMarkerSymbol > mSizeLegendSymbol;
+
+    /**
+     * The label uset as title or the size attribute
+     * @brief mSizeLabel
+     */
+    QString mSizeLabel;
+
+    /**
+     * The size class used tor the legend
+     * @brief mSizeRules
+     */
+    QList< double > mSizeRules;
+
+    /**
+      The size legend type
+     * @brief mLegendType
+     */
+    QgsDiagramSettings::SizeLegendType mSizeLegendType;
 };
 
-/** \ingroup core
+/**
+ * \ingroup core
  * Renders the diagrams for all features with the same settings
-*/
+ */
 class CORE_EXPORT QgsSingleCategoryDiagramRenderer : public QgsDiagramRenderer
 {
   public:
@@ -639,7 +734,8 @@ class CORE_EXPORT QgsSingleCategoryDiagramRenderer : public QgsDiagramRenderer
     QgsDiagramSettings mSettings;
 };
 
-/** \ingroup core
+/**
+ * \ingroup core
  * \class QgsLinearlyInterpolatedDiagramRenderer
  */
 class CORE_EXPORT QgsLinearlyInterpolatedDiagramRenderer : public QgsDiagramRenderer
@@ -696,6 +792,13 @@ class CORE_EXPORT QgsLinearlyInterpolatedDiagramRenderer : public QgsDiagramRend
     void writeXml( QDomElement &layerElem, QDomDocument &doc, const QgsVectorLayer *layer ) const override;
 
     QList< QgsLayerTreeModelLegendNode * > legendItems( QgsLayerTreeLayer *nodeLayer ) const override;
+
+    /**
+     * @note added in QGIS 3.0
+     * Set the symbole, in case of concentric symbol,
+     * the provided symbole is the base one and the concentric symbol will be build.
+     */
+    void setSizeLegendSymbol( QgsMarkerSymbol* symbol ) override;
 
   protected:
     bool diagramSettings( const QgsFeature &feature, const QgsRenderContext &c, QgsDiagramSettings &s ) const override;

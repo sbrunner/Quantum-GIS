@@ -176,6 +176,7 @@
 %Include qgsvirtuallayerdefinitionutils.sip
 %Include qgsmapthemecollection.sip
 %Include qgsxmlutils.sip
+%Include qgsconcentriclegendsymbol.sip
 
 %Include annotations/qgsannotation.sip
 %Include annotations/qgsannotationmanager.sip

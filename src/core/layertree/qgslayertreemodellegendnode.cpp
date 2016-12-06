@@ -27,11 +27,13 @@
 #include "qgsimageoperation.h"
 #include "qgsvectorlayer.h"
 #include "qgsrasterrenderer.h"
+#include "qgsdiagramrenderer.h"
 
-QgsLayerTreeModelLegendNode::QgsLayerTreeModelLegendNode( QgsLayerTreeLayer *nodeL, QObject *parent )
-  : QObject( parent )
-  , mLayerNode( nodeL )
-  , mEmbeddedInParent( false )
+QgsLayerTreeModelLegendNode::QgsLayerTreeModelLegendNode( QgsLayerTreeLayer* nodeL, QObject* parent )
+    : QObject( parent )
+    , mLayerNode( nodeL )
+    , mEmbeddedInParent( false )
+    , mFullWith( false )
 {
 }
 
@@ -77,8 +79,11 @@ QSizeF QgsLayerTreeModelLegendNode::drawSymbol( const QgsLegendSettings &setting
     return QSizeF();
 
   if ( ctx )
+  {
+    ctx->painter->setFont( QFont( settings.style( QgsLegendStyle::SymbolLabel ).font() ) );
     symbolIcon.paint( ctx->painter, ctx->point.x(), ctx->point.y() + ( itemHeight - settings.symbolSize().height() ) / 2,
                       settings.symbolSize().width(), settings.symbolSize().height() );
+  }
   return settings.symbolSize();
 }
 
@@ -100,7 +105,8 @@ QSizeF QgsLayerTreeModelLegendNode::drawSymbolText( const QgsLegendSettings &set
   {
     ctx->painter->setPen( settings.fontColor() );
 
-    labelX = ctx->point.x() + qMax( static_cast< double >( symbolSize.width() ), ctx->labelXOffset );
+    double offset = this->fullWith() ? 0 : ctx->labelXOffset;
+    labelX = ctx->point.x() + qMax( static_cast< double >( symbolSize.width() ), offset );
     labelY = ctx->point.y();
 
     // Vertical alignment of label with symbol
@@ -359,7 +365,35 @@ QSizeF QgsSymbolLegendNode::drawSymbol( const QgsLegendSettings &settings, ItemC
   double widthOffset = 0;
   double heightOffset = 0;
 
-  if ( QgsMarkerSymbol *markerSymbol = dynamic_cast<QgsMarkerSymbol *>( s ) )
+  QFont font( settings.style( QgsLegendStyle::SymbolLabel ).font() );
+
+  if ( this->fullWith() )
+  {
+    QScopedPointer<QgsRenderContext> temp_context( new QgsRenderContext );
+    QScopedPointer<QPainter> temp_painter( new QPainter );
+    QSize size( 4 * settings.dpi(), 4 * settings.dpi() );
+    QPixmap pixmap( size );
+    pixmap.fill( Qt::transparent );
+    temp_painter->begin( &pixmap );
+    QFont temp_font( font );
+    temp_font.setPointSizeF( font.pointSizeF() * settings.dpi() / 96 );
+    temp_painter->setFont( temp_font );
+    temp_context->setScaleFactor( context.scaleFactor() );
+    temp_context->setRendererScale( context.rendererScale() );
+    temp_context->setMapToPixel( context.mapToPixel() );
+    temp_context->setForceVectorOutput( true );
+    temp_context->setPainter( temp_painter.data() );
+
+    QgsSymbolLayerUtils::symbolPreviewPixmap( s, size, 0, temp_context.data() );
+
+    const QSize legend_size = QgsImageOperation::nonTransparentImageRect(
+                                pixmap.toImage(), QSize(), true ).size();
+    width = legend_size.width() / context.scaleFactor();
+    height = legend_size.height() / context.scaleFactor();
+
+    temp_painter->end();
+  }
+  else if ( QgsMarkerSymbol* markerSymbol = dynamic_cast<QgsMarkerSymbol*>( s ) )
   {
     // allow marker symbol to occupy bigger area if necessary
     double size = context.convertToPainterUnits( markerSymbol->size(), markerSymbol->sizeUnit(), markerSymbol->sizeMapUnitScale() ) / context.scaleFactor();
@@ -392,16 +426,17 @@ QSizeF QgsSymbolLegendNode::drawSymbol( const QgsLegendSettings &settings, ItemC
     p->setRenderHint( QPainter::Antialiasing );
     p->translate( currentXPosition + widthOffset, currentYCoord + heightOffset );
     p->scale( 1.0 / dotsPerMM, 1.0 / dotsPerMM );
+    QSize legendSize( width * dotsPerMM, height * dotsPerMM );
     if ( opacity != 255 && settings.useAdvancedEffects() )
     {
       //semi transparent layer, so need to draw symbol to an image (to flatten it first)
       //create image which is same size as legend rect, in case symbol bleeds outside its alloted space
-      QSize tempImageSize( width * dotsPerMM, height * dotsPerMM );
-      QImage tempImage = QImage( tempImageSize, QImage::Format_ARGB32 );
+      QImage tempImage = QImage( legendSize, QImage::Format_ARGB32 );
       tempImage.fill( Qt::transparent );
       QPainter imagePainter( &tempImage );
       context.setPainter( &imagePainter );
-      s->drawPreviewIcon( &imagePainter, tempImageSize, &context );
+      imagePainter.setFont( font );
+      s->drawPreviewIcon( &imagePainter, legendSize, &context );
       context.setPainter( ctx->painter );
       //reduce opacity of image
       imagePainter.setCompositionMode( QPainter::CompositionMode_DestinationIn );
@@ -412,7 +447,8 @@ QSizeF QgsSymbolLegendNode::drawSymbol( const QgsLegendSettings &settings, ItemC
     }
     else
     {
-      s->drawPreviewIcon( p, QSize( width * dotsPerMM, height * dotsPerMM ), &context );
+      p->setFont( font );
+      s->drawPreviewIcon( p, legendSize, &context );
     }
     p->restore();
   }

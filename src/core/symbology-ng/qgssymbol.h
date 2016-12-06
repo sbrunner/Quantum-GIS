@@ -179,7 +179,7 @@ class CORE_EXPORT QgsSymbol
     //! Draw icon of the symbol that occupyies area given by size using the painter.
     //! Optionally custom context may be given in order to get rendering of symbols that use map units right.
     //! @note customContext parameter added in 2.6
-    void drawPreviewIcon( QPainter *painter, QSize size, QgsRenderContext *customContext = nullptr );
+    virtual void drawPreviewIcon( QPainter* painter, QSize size, QgsRenderContext* customContext = nullptr );
 
     //! export symbol as image format. PNG and SVG supported
     void exportImage( const QString &path, const QString &format, QSize size );
@@ -289,6 +289,12 @@ class CORE_EXPORT QgsSymbol
      */
     QgsSymbolRenderContext *symbolRenderContext();
 
+    /**
+     * Retrieve a cloned list of all layers that make up this symbol.
+     * Ownership is transferred to the caller.
+     */
+    QgsSymbolLayerList cloneLayers() const;
+
   protected:
     QgsSymbol( SymbolType type, const QgsSymbolLayerList &layers ); // can't be instantiated
 
@@ -328,12 +334,6 @@ class CORE_EXPORT QgsSymbol
      * Creates a polygon in screen coordinates from a QgsPolygon in map coordinates
      */
     static void _getPolygon( QPolygonF &pts, QList<QPolygonF> &holes, QgsRenderContext &context, const QgsPolygonV2 &polygon, bool clipToExtent = true );
-
-    /**
-     * Retrieve a cloned list of all layers that make up this symbol.
-     * Ownership is transferred to the caller.
-     */
-    QgsSymbolLayerList cloneLayers() const;
 
     /**
      * Renders a context using a particular symbol layer without passing in a

@@ -21,6 +21,8 @@
 #include "qgslayertreemodellegendnode.h"
 #include "qgsfontutils.h"
 #include "qgssymbollayerutils.h"
+#include "qgssymbollayer.h"
+#include "qgsconcentriclegendsymbol.h"
 
 #include <QDomElement>
 #include <QPainter>
@@ -273,6 +275,34 @@ void QgsDiagramSettings::readXml( const QDomElement &elem, const QgsVectorLayer 
 
   minimumSize = elem.attribute( QStringLiteral( "minimumSize" ) ).toDouble();
 
+  sizeAttributeLabel = elem.attribute( QStringLiteral( "sizeAttributeLabel" ) );
+
+  QString sizeDiagramLegendType_ = elem.attribute( QStringLiteral( "sizeDiagramLegendType" ) );
+  if ( sizeDiagramLegendType_ == "ConcentricCenter" )
+  {
+    sizeDiagramLegendType = ConcentricCenter;
+  }
+  else if ( sizeDiagramLegendType_ == "ConcentricTop" )
+  {
+    sizeDiagramLegendType = ConcentricTop;
+  }
+  else if ( sizeDiagramLegendType_ == "Multiple" )
+  {
+    sizeDiagramLegendType = Multiple;
+  }
+  else
+  {
+    sizeDiagramLegendType = ConcentricBottom;
+  }
+
+  sizeRules.clear();
+  QDomNodeList diagramSizeLegendRules = elem.elementsByTagName( QStringLiteral( "diagramSizeLegendRule" ) );
+  for ( int i = 0; i < diagramSizeLegendRules.size(); i++ )
+  {
+    QDomElement ruleElem = diagramSizeLegendRules.at( i ).toElement();
+    sizeRules.push_back( ruleElem.attribute( QStringLiteral( "value" ) ).toFloat() );
+  }
+
   //colors
   categoryColors.clear();
   QDomNodeList attributes = elem.elementsByTagName( QStringLiteral( "attribute" ) );
@@ -391,6 +421,29 @@ void QgsDiagramSettings::writeXml( QDomElement &rendererElem, QDomDocument &doc,
   categoryElem.setAttribute( QStringLiteral( "barWidth" ), QString::number( barWidth ) );
   categoryElem.setAttribute( QStringLiteral( "minimumSize" ), QString::number( minimumSize ) );
   categoryElem.setAttribute( QStringLiteral( "angleOffset" ), QString::number( angleOffset ) );
+  categoryElem.setAttribute( QStringLiteral( "sizeAttributeLabel" ), sizeAttributeLabel );
+  switch ( sizeDiagramLegendType )
+  {
+    case QgsDiagramSettings::ConcentricBottom:
+      categoryElem.setAttribute( QStringLiteral( "sizeDiagramLegendType" ), QStringLiteral( "ConcentricBottom" ) );
+      break;
+    case QgsDiagramSettings::ConcentricCenter:
+      categoryElem.setAttribute( QStringLiteral( "sizeDiagramLegendType" ), QStringLiteral( "ConcentricCenter" ) );
+      break;
+    case QgsDiagramSettings::ConcentricTop:
+      categoryElem.setAttribute( QStringLiteral( "sizeDiagramLegendType" ), QStringLiteral( "ConcentricTop" ) );
+      break;
+    case QgsDiagramSettings::Multiple:
+      categoryElem.setAttribute( QStringLiteral( "sizeDiagramLegendType" ), QStringLiteral( "Multiple" ) );
+      break;
+  }
+  foreach ( float ruleValue, sizeRules )
+  {
+    QDomElement ruleElem = doc.createElement( QStringLiteral( "diagramSizeLegendRule" ) );
+    ruleElem.setAttribute( QStringLiteral( "value" ), ruleValue );
+    categoryElem.appendChild( ruleElem );
+  }
+
 
   int nCats = qMin( categoryColors.size(), categoryAttributes.size() );
   for ( int i = 0; i < nCats; ++i )
@@ -407,10 +460,11 @@ void QgsDiagramSettings::writeXml( QDomElement &rendererElem, QDomDocument &doc,
 }
 
 QgsDiagramRenderer::QgsDiagramRenderer()
-  : mDiagram( nullptr )
-  , mShowAttributeLegend( true )
-  , mShowSizeLegend( false )
-  , mSizeLegendSymbol( QgsMarkerSymbol::createSimple( QgsStringMap() ) )
+    : mDiagram( nullptr )
+    , mShowAttributeLegend( true )
+    , mShowSizeLegend( false )
+    , mSizeLegendSymbol( QgsMarkerSymbol::createSimple( QgsStringMap() ) )
+    , mSizeLabel()
 {
 }
 
@@ -425,11 +479,12 @@ void QgsDiagramRenderer::setDiagram( QgsDiagram *d )
   mDiagram = d;
 }
 
-QgsDiagramRenderer::QgsDiagramRenderer( const QgsDiagramRenderer &other )
-  : mDiagram( other.mDiagram ? other.mDiagram->clone() : nullptr )
-  , mShowAttributeLegend( other.mShowAttributeLegend )
-  , mShowSizeLegend( other.mShowSizeLegend )
-  , mSizeLegendSymbol( other.mSizeLegendSymbol ? other.mSizeLegendSymbol->clone() : nullptr )
+QgsDiagramRenderer::QgsDiagramRenderer( const QgsDiagramRenderer& other )
+    : mDiagram( other.mDiagram ? other.mDiagram->clone() : nullptr )
+    , mShowAttributeLegend( other.mShowAttributeLegend )
+    , mShowSizeLegend( other.mShowSizeLegend )
+    , mSizeLegendSymbol( other.mSizeLegendSymbol ? other.mSizeLegendSymbol->clone() : nullptr )
+    , mSizeLabel( other.mSizeLabel )
 {
 }
 
@@ -439,6 +494,7 @@ QgsDiagramRenderer &QgsDiagramRenderer::operator=( const QgsDiagramRenderer &oth
   mShowAttributeLegend = other.mShowAttributeLegend;
   mShowSizeLegend = other.mShowSizeLegend;
   mSizeLegendSymbol.reset( other.mSizeLegendSymbol ? other.mSizeLegendSymbol->clone() : nullptr );
+  mSizeLabel = other.mSizeLabel;
   return *this;
 }
 
@@ -531,7 +587,44 @@ int QgsDiagramRenderer::dpiPaintDevice( const QPainter *painter )
   return -1;
 }
 
-void QgsDiagramRenderer::_readXml( const QDomElement &elem, const QgsVectorLayer *layer )
+QgsMarkerSymbol* QgsDiagramRenderer::createSymbol( QDomElement sizeLegendSymbolElem ) const
+{
+  return QgsSymbolLayerUtils::loadSymbol<QgsMarkerSymbol>( sizeLegendSymbolElem );
+}
+
+void QgsLinearlyInterpolatedDiagramRenderer::setSizeLegendSymbol( QgsMarkerSymbol* symbol )
+{
+  if ( mSettings.sizeDiagramLegendType == QgsDiagramSettings::Multiple )
+  {
+    mSizeLegendSymbol.reset( symbol );
+  }
+  else
+  {
+    // Add concentric circle
+    QList< LabelValue > values;
+    const QList<double> sizeRules = mSettings.sizeRules.length() == 0 ?
+                                    QgsSymbolLayerUtils::prettyBreaks( mInterpolationSettings.lowerValue, mInterpolationSettings.upperValue, 4 ) :
+                                    mSettings.sizeRules;
+    QLocale locale;
+    Q_FOREACH ( double v, sizeRules )
+    {
+      double legendSize = mDiagram->legendSize( v, mSettings, mInterpolationSettings );
+      values << LabelValue( locale.toString( v ), legendSize );
+    }
+
+    double size = mDiagram->legendSize( mInterpolationSettings.upperValue, mSettings, mInterpolationSettings );
+    QgsConcentricLegendSymbol* concentricSymbol = new QgsConcentricLegendSymbol(
+      symbol,
+      values,
+      mSettings.sizeType,
+      size,
+      mSettings.sizeDiagramLegendType
+    );
+    mSizeLegendSymbol.reset( concentricSymbol );
+  }
+}
+
+void QgsDiagramRenderer::_readXml( const QDomElement& elem, const QgsVectorLayer* layer )
 {
   Q_UNUSED( layer )
 
@@ -558,7 +651,7 @@ void QgsDiagramRenderer::_readXml( const QDomElement &elem, const QgsVectorLayer
   QDomElement sizeLegendSymbolElem = elem.firstChildElement( QStringLiteral( "symbol" ) );
   if ( !sizeLegendSymbolElem.isNull() && sizeLegendSymbolElem.attribute( QStringLiteral( "name" ) ) == QLatin1String( "sizeSymbol" ) )
   {
-    mSizeLegendSymbol.reset( QgsSymbolLayerUtils::loadSymbol<QgsMarkerSymbol>( sizeLegendSymbolElem ) );
+    setSizeLegendSymbol( createSymbol( sizeLegendSymbolElem ) );
   }
 }
 
@@ -767,16 +860,36 @@ QList< QgsLayerTreeModelLegendNode * > QgsLinearlyInterpolatedDiagramRenderer::l
 
   if ( mShowSizeLegend && mDiagram && mSizeLegendSymbol )
   {
-    // add size legend
-    Q_FOREACH ( double v, QgsSymbolLayerUtils::prettyBreaks( mInterpolationSettings.lowerValue, mInterpolationSettings.upperValue, 4 ) )
+    // Add size attribute name
+    QgsSimpleLegendNode* nodeLabel = new QgsSimpleLegendNode( nodeLayer, mSettings.sizeAttributeLabel );
+    nodeLabel->setFullWith( true );
+    nodes << nodeLabel;
+
+    // Add size legend
+    if ( mSettings.sizeDiagramLegendType != QgsDiagramSettings::Multiple )
     {
-      double size = mDiagram->legendSize( v, mSettings, mInterpolationSettings );
-      QgsLegendSymbolItem si( mSizeLegendSymbol.get(), QString::number( v ), QString() );
-      QgsMarkerSymbol *s = static_cast<QgsMarkerSymbol *>( si.symbol() );
-      s->setSize( size );
-      s->setSizeUnit( mSettings.sizeType );
-      s->setSizeMapUnitScale( mSettings.sizeScale );
-      nodes << new QgsSymbolLegendNode( nodeLayer, si );
+      QgsLegendSymbolItem si( mSizeLegendSymbol.get(), QString(), QString() );
+      si.setEditable( false );
+      QgsSymbolLegendNode* nodeSymbol = new QgsSymbolLegendNode( nodeLayer, si );
+      nodeSymbol->setFullWith( true );
+      nodes << nodeSymbol;
+    }
+    else
+    {
+      const QList<double> sizeRules = mSettings.sizeRules.length() == 0 ?
+                                      QgsSymbolLayerUtils::prettyBreaks( mInterpolationSettings.lowerValue, mInterpolationSettings.upperValue, 4 ) :
+                                      mSettings.sizeRules;
+      QLocale locale;
+      Q_FOREACH ( double v, sizeRules )
+      {
+        double size = mDiagram->legendSize( v, mSettings, mInterpolationSettings );
+        QgsLegendSymbolItem si( mSizeLegendSymbol.get(), locale.toString( v ), QString() );
+        QgsMarkerSymbol * s = static_cast<QgsMarkerSymbol *>( si.symbol() );
+        s->setSize( size );
+        s->setSizeUnit( mSettings.sizeType );
+        s->setSizeMapUnitScale( mSettings.sizeScale );
+        nodes << new QgsSymbolLegendNode( nodeLayer, si );
+      }
     }
   }
 
