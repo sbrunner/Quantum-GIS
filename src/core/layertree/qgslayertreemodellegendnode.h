@@ -120,6 +120,13 @@ class CORE_EXPORT QgsLayerTreeModelLegendNode : public QObject
      */
     virtual QSizeF drawSymbolText( const QgsLegendSettings& settings, ItemContext* ctx, QSizeF symbolSize ) const;
 
+    /**
+     * Is a full width symbol, evantually with text obove it.
+     * @note added in QGIS 3.0
+     */
+    bool fullWith() const { return mFullWith; }
+    void setFullWith( bool fullWith ) {mFullWith = fullWith;}
+
   signals:
     //! Emitted on internal data change so the layer tree model can forward the signal to views
     void dataChanged();
@@ -132,6 +139,7 @@ class CORE_EXPORT QgsLayerTreeModelLegendNode : public QObject
     QgsLayerTreeLayer* mLayerNode = nullptr;
     bool mEmbeddedInParent;
     QString mUserLabel;
+    bool mFullWith;
 };
 
 #include "qgslegendsymbolitem.h"
@@ -199,6 +207,12 @@ class CORE_EXPORT QgsSymbolLegendNode : public QgsLayerTreeModelLegendNode
      * @note added in QGIS 2.14
      */
     void setSymbol( QgsSymbol* symbol );
+
+    /**
+     * Is an editable symbol.
+     * @note added in QGIS 3.0
+     */
+    bool editable() const { return mItem.editable();}
 
   public slots:
 

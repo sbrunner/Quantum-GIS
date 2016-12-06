@@ -40,7 +40,7 @@
 #include <QList>
 #include <QMessageBox>
 #include <QSettings>
-
+#include <QVariant>
 
 
 QgsExpressionContext QgsDiagramProperties::createExpressionContext() const
@@ -59,6 +59,7 @@ QgsDiagramProperties::QgsDiagramProperties( QgsVectorLayer* layer, QWidget* pare
     : QWidget( parent )
     , mMapCanvas( canvas )
 {
+
   mLayer = layer;
   if ( !layer )
   {
@@ -66,6 +67,8 @@ QgsDiagramProperties::QgsDiagramProperties( QgsVectorLayer* layer, QWidget* pare
   }
 
   setupUi( this );
+
+  mSizeRulesTable->setItemDelegate( new SizeRuleItemDelegate( this ) );
 
   // get rid of annoying outer focus rect on Mac
   mDiagramOptionsListWidget->setAttribute( Qt::WA_MacShowFocusRect, false );
@@ -80,6 +83,11 @@ QgsDiagramProperties::QgsDiagramProperties( QgsVectorLayer* layer, QWidget* pare
   pix = QgsApplication::getThemePixmap( QStringLiteral( "histogram" ) );
   mDiagramTypeComboBox->addItem( pix, tr( "Histogram" ), DIAGRAM_NAME_HISTOGRAM );
   mDiagramTypeComboBox->blockSignals( false );
+
+  mLegendType->addItem( tr( "Concentric symbols" ), QVariant(( int ) QgsDiagramSettings::ConcentricBottom ) );
+  mLegendType->addItem( tr( "Concentric symbols middle" ), QVariant(( int ) QgsDiagramSettings::ConcentricCenter ) );
+  mLegendType->addItem( tr( "Concentric symbols top" ), QVariant(( int ) QgsDiagramSettings::ConcentricTop ) );
+  mLegendType->addItem( tr( "Multipple symbols" ), QVariant(( int ) QgsDiagramSettings::Multiple ) );
 
   mScaleRangeWidget->setMapCanvas( mMapCanvas );
   mSizeFieldExpressionWidget->registerExpressionContextGenerator( this );
@@ -253,6 +261,9 @@ QgsDiagramProperties::QgsDiagramProperties( QgsVectorLayer* layer, QWidget* pare
     mSizeLegendSymbol.reset( dr->sizeLegendSymbol() ? dr->sizeLegendSymbol()->clone() : QgsMarkerSymbol::createSimple( QgsStringMap() ) );
     QIcon icon = QgsSymbolLayerUtils::symbolPreviewIcon( mSizeLegendSymbol.get(), mButtonSizeLegendSymbol->iconSize() );
     mButtonSizeLegendSymbol->setIcon( icon );
+    mSizeLabel->setText( dr->sizeLabel() );
+    mSizeRulesTable->clear();
+
 
     //assume single category or linearly interpolated diagram renderer for now
     QList<QgsDiagramSettings> settingList = dr->diagramSettings();
@@ -275,6 +286,14 @@ QgsDiagramProperties::QgsDiagramProperties( QgsVectorLayer* layer, QWidget* pare
       mDiagramUnitComboBox->setMapUnitScale( settingList.at( 0 ).sizeScale );
       mDiagramLineUnitComboBox->setUnit( settingList.at( 0 ).lineSizeUnit );
       mDiagramLineUnitComboBox->setMapUnitScale( settingList.at( 0 ).lineSizeScale );
+      mSizeAttributeLegend->setText( settingList.at( 0 ).sizeAttributeLabel );
+      mLegendType->setCurrentIndex( mLegendType->findData( QVariant( settingList.at( 0 ).sizeDiagramLegendType ) ) );
+      foreach ( double rule, settingList.at( 0 ).sizeRules )
+      {
+        QListWidgetItem* item = new QListWidgetItem( QString( "%1" ).arg( rule ), mSizeRulesTable );
+        item->setFlags( item->flags() | Qt::ItemIsEditable );
+      }
+
 
       if ( settingList.at( 0 ).labelPlacementMethod == QgsDiagramSettings::Height )
       {
@@ -765,6 +784,16 @@ void QgsDiagramProperties::apply()
   ds.lineSizeScale = mDiagramLineUnitComboBox->getMapUnitScale();
   ds.labelPlacementMethod = static_cast<QgsDiagramSettings::LabelPlacementMethod>( mLabelPlacementComboBox->currentData().toInt() );
   ds.scaleByArea = mScaleDependencyComboBox->currentData().toBool();
+  ds.sizeAttributeLabel = mSizeAttributeLegend->text();
+  ds.sizeDiagramLegendType = static_cast<QgsDiagramSettings::SizeLegendType>( mLegendType->currentData().toInt() );
+
+  ds.sizeRules.clear();
+  for ( int i = 0; i < mSizeRulesTable->count(); ++i )
+  {
+    double sizeRule = mSizeRulesTable->item( i )->text().toDouble();
+    ds.sizeRules.append( sizeRule );
+  }
+  qSort( ds.sizeRules );
 
   if ( mIncreaseSmallDiagramsCheck->isChecked() )
   {
@@ -824,6 +853,14 @@ void QgsDiagramProperties::apply()
   renderer->setAttributeLegend( mCheckBoxAttributeLegend->isChecked() );
   renderer->setSizeLegend( mCheckBoxSizeLegend->isChecked() );
   renderer->setSizeLegendSymbol( mSizeLegendSymbol->clone() );
+  renderer->setSizeLabel( mSizeLabel->text() );
+  QList<double> sizeRules;
+  for ( int i = 0; i < mSizeRulesTable->count(); ++i )
+  {
+    double sizeRule = mSizeRulesTable->item( i )->text().toDouble();
+    sizeRules.append( sizeRule );
+  }
+  renderer->setSizeRules( sizeRules );
   mLayer->setDiagramRenderer( renderer );
 
   QgsDiagramLayerSettings dls;
@@ -975,4 +1012,16 @@ void QgsDiagramProperties::scalingTypeChanged()
   {
     mCheckBoxSizeLegend->setEnabled( true );
   }
+}
+
+
+void QgsDiagramProperties::on_mAddButton_clicked()
+{
+  QListWidgetItem* item = new QListWidgetItem( "1", mSizeRulesTable );
+  item->setFlags( item->flags() | Qt::ItemIsEditable );
+}
+
+void QgsDiagramProperties::on_mRemoveButton_clicked()
+{
+  qDeleteAll( mSizeRulesTable->selectedItems() );
 }
