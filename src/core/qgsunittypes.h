@@ -100,6 +100,15 @@ class CORE_EXPORT QgsUnitTypes
       RenderUnknownUnit, //!< Mixed or unknown units
     };
 
+    //! Diagram size legend type
+    enum SizeLegendType
+    {
+      ConcentricBottom,
+      ConcentricCenter,
+      ConcentricTop,
+      Multiple
+    };
+
     //! List of render units
     typedef QList<RenderUnit> RenderUnitList;
 

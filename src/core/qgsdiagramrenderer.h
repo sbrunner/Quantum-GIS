@@ -360,6 +360,15 @@ class CORE_EXPORT QgsDiagramSettings
       Right
     };
 
+    //! Diagram size legend type
+    enum SizeLegendType
+    {
+      ConcentricBottom,
+      ConcentricCenter,
+      ConcentricTop,
+      Multiple
+    };
+
     QgsDiagramSettings()
         : enabled( true )
         , sizeType( QgsUnitTypes::RenderMillimeters )
@@ -375,6 +384,8 @@ class CORE_EXPORT QgsDiagramSettings
         , minScaleDenominator( -1 )
         , maxScaleDenominator( -1 )
         , minimumSize( 0.0 )
+        , sizeAttributeLabel()
+        , sizeDiagramLegendType( QgsDiagramSettings::ConcentricBottom )
     {}
     bool enabled;
     QFont font;
@@ -430,6 +441,10 @@ class CORE_EXPORT QgsDiagramSettings
      */
     QList< QgsLayerTreeModelLegendNode* > legendItems( QgsLayerTreeLayer* nodeLayer ) const;
 
+    QString sizeAttributeLabel;
+    SizeLegendType sizeDiagramLegendType;
+    QList<double> sizeRules;
+
 };
 
 /** \ingroup core
@@ -460,7 +475,6 @@ class CORE_EXPORT QgsDiagramInterpolationSettings
 class CORE_EXPORT QgsDiagramRenderer
 {
   public:
-
     QgsDiagramRenderer();
     virtual ~QgsDiagramRenderer();
 
@@ -560,6 +574,50 @@ class CORE_EXPORT QgsDiagramRenderer
      */
     void setSizeLegendSymbol( QgsMarkerSymbol* symbol ) { mSizeLegendSymbol.reset( symbol ); }
 
+    /**
+     * Set the label uset as title or the size attribute
+     * @brief setSizeLabel
+     * @note added in QGIS 3.0
+     * @param label
+     */
+    void setSizeLabel( QString label ) { mSizeLabel = label; }
+
+    /**
+     * @brief sizeLabel
+     * @note added in QGIS 3.0
+     * @return
+     */
+    QString sizeLabel( ) const { return mSizeLabel; }
+
+    /**
+     * The size class used tor the legend (label, value)
+     * @brief setSizeRules
+     * @note added in QGIS 3.0
+     * @param rules
+     */
+    void setSizeRules( QList< double > rules ) { mSizeRules = rules; }
+
+    /**
+     * @brief sizeRules
+     * @note added in QGIS 3.0
+     * @return
+     */
+    QList< double > sizeRules() const { return mSizeRules; }
+
+    /**
+     * @brief setSizeLegendType
+     * @note added in QGIS 3.0
+     * @param type
+     */
+    void setSizeLegendType( QgsDiagramSettings::SizeLegendType type ) { mSizeLegendType = type; }
+
+    /**
+     * @brief sizeLegendType
+     * @note added in QGIS 3.0
+     * @return
+     */
+    QgsDiagramSettings::SizeLegendType sizeLegendType() const { return mSizeLegendType; }
+
   protected:
     QgsDiagramRenderer( const QgsDiagramRenderer& other );
     QgsDiagramRenderer& operator=( const QgsDiagramRenderer& other );
@@ -573,6 +631,8 @@ class CORE_EXPORT QgsDiagramRenderer
 
     //! Returns size of the diagram (in painter units) or an invalid size in case of error
     virtual QSizeF diagramSize( const QgsFeature& features, const QgsRenderContext& c ) const = 0;
+
+    virtual QgsMarkerSymbol* createSymbol( QDomElement sizeLegendSymbolElem ) const;
 
     //! Converts size from mm to map units
     void convertSizeToMapUnits( QSizeF& size, const QgsRenderContext& context ) const;
@@ -605,6 +665,24 @@ class CORE_EXPORT QgsDiagramRenderer
 
     //! Marker symbol to use in size legends
     std::unique_ptr< QgsMarkerSymbol > mSizeLegendSymbol;
+
+    /**
+     * The label uset as title or the size attribute
+     * @brief mSizeLabel
+     */
+    QString mSizeLabel;
+
+    /**
+     * The size class used tor the legend
+     * @brief mSizeRules
+     */
+    QList< double > mSizeRules;
+
+    /**
+      The size legend type
+     * @brief mLegendType
+     */
+    QgsDiagramSettings::SizeLegendType mSizeLegendType;
 };
 
 /** \ingroup core
@@ -701,6 +779,7 @@ class CORE_EXPORT QgsLinearlyInterpolatedDiagramRenderer : public QgsDiagramRend
     bool diagramSettings( const QgsFeature &feature, const QgsRenderContext& c, QgsDiagramSettings& s ) const override;
 
     QSizeF diagramSize( const QgsFeature&, const QgsRenderContext& c ) const override;
+    QgsMarkerSymbol* createSymbol( QDomElement sizeLegendSymbolElem ) const override;
 
   private:
     QgsDiagramSettings mSettings;

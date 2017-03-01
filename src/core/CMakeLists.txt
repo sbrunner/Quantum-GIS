@@ -121,6 +121,7 @@ SET(QGIS_CORE_SRCS
   qgsdatumtransformstore.cpp
   qgsdbfilterproxymodel.cpp
   qgsdiagramrenderer.cpp
+  qgsconcentriclegendsymbol.cpp
   qgsdistancearea.cpp
   qgseditformconfig.cpp
   qgserror.cpp

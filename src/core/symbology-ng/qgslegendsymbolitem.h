@@ -71,6 +71,13 @@ class CORE_EXPORT QgsLegendSymbolItem
     //! Set symbol of the item. Takes ownership of symbol.
     void setSymbol( QgsSymbol* s );
 
+    /**
+     * Is an editable symbol.
+     * @note added in QGIS 3.0
+     */
+    bool editable() const { return mEditable;}
+    void setEditable( bool editable ) {mEditable = editable;}
+
   private:
     //! symbol. owned by the struct. can be null.
     QgsSymbol* mSymbol = nullptr;
@@ -92,6 +99,8 @@ class CORE_EXPORT QgsLegendSymbolItem
     int mLevel;
     //! Key of the parent legend node. For legends with tree hierarchy
     QString mParentKey;
+    bool mEditable;
+    bool mFullWith;
 };
 
 

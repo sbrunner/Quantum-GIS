@@ -24,6 +24,8 @@ QgsLegendSymbolItem::QgsLegendSymbolItem()
     , mScaleMinDenom( -1 )
     , mScaleMaxDenom( -1 )
     , mLevel( 0 )
+    , mEditable( true )
+    , mFullWith( false )
 {
 }
 
@@ -37,6 +39,8 @@ QgsLegendSymbolItem::QgsLegendSymbolItem( QgsSymbol* symbol, const QString& labe
     , mScaleMaxDenom( scaleMaxDenom )
     , mLevel( level )
     , mParentKey( parentRuleKey )
+    , mEditable( true )
+    , mFullWith( false )
 {
 }
 
