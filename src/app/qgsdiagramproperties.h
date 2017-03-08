@@ -21,12 +21,19 @@
 #include <QDialog>
 #include "qgsdiagramrenderer.h"
 #include <ui_qgsdiagrampropertiesbase.h>
+#include <QItemDelegate>
 #include <QStyledItemDelegate>
 #include "qgis_app.h"
 
 class QgsVectorLayer;
 class QgsMapCanvas;
 
+
+/**
+ * The QgsDiagramProperties class
+ * \ingroup app
+ * \note added in QGIS 3.0
+ */
 class APP_EXPORT QgsDiagramProperties : public QWidget, private Ui::QgsDiagramPropertiesBase, private QgsExpressionContextGenerator
 {
     Q_OBJECT
@@ -92,6 +99,8 @@ class APP_EXPORT QgsDiagramProperties : public QWidget, private Ui::QgsDiagramPr
   private slots:
 
     void updateProperty();
+    void on_mAddButton_clicked();
+    void on_mRemoveButton_clicked();
 };
 
 class EditBlockerDelegate: public QStyledItemDelegate
@@ -107,5 +116,23 @@ class EditBlockerDelegate: public QStyledItemDelegate
     }
 };
 
+class SizeRuleItemDelegate: public QItemDelegate
+{
+  public:
+    SizeRuleItemDelegate( QObject* parent = nullptr )
+        : QItemDelegate( parent )
+    {
+      this->validator = new QDoubleValidator( this );
+    }
+
+    virtual QWidget* createEditor( QWidget* parent, const QStyleOptionViewItem &, const QModelIndex & ) const override
+    {
+      QLineEdit* edit = new QLineEdit( parent );
+      edit->setValidator( this->validator );
+      return edit;
+    }
+  private:
+    const QValidator* validator;
+};
 
 #endif // QGSDIAGRAMPROPERTIES_H

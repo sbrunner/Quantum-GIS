@@ -120,6 +120,18 @@ class CORE_EXPORT QgsLayerTreeModelLegendNode : public QObject
      */
     virtual QSizeF drawSymbolText( const QgsLegendSettings &settings, ItemContext *ctx, QSizeF symbolSize ) const;
 
+    /**
+     * Is a full width symbol, Is used when the text is above the legend graphics.
+     * @note added in QGIS 3.0
+     */
+    bool fullWith() const { return mFullWith; }
+
+    /**
+     * Set the full with.
+     * @param fullWith
+     */
+    void setFullWith( bool fullWith ) {mFullWith = fullWith;}
+
   signals:
     //! Emitted on internal data change so the layer tree model can forward the signal to views
     void dataChanged();
@@ -132,6 +144,7 @@ class CORE_EXPORT QgsLayerTreeModelLegendNode : public QObject
     QgsLayerTreeLayer *mLayerNode = nullptr;
     bool mEmbeddedInParent;
     QString mUserLabel;
+    bool mFullWith;
 };
 
 #include "qgslegendsymbolitem.h"
@@ -186,13 +199,15 @@ class CORE_EXPORT QgsSymbolLegendNode : public QgsLayerTreeModelLegendNode
      */
     QSize minimumIconSize( QgsRenderContext *context ) const;
 
-    /** Returns the symbol used by the legend node.
+    /**
+     * Returns the symbol used by the legend node.
      * @see setSymbol()
      * @note added in QGIS 2.14
      */
     const QgsSymbol *symbol() const;
 
-    /** Sets the symbol to be used by the legend node. The symbol change is also propagated
+    /**
+     * Sets the symbol to be used by the legend node. The symbol change is also propagated
      * to the associated vector layer's renderer.
      * @param symbol new symbol for node. Ownership is transferred.
      * @see symbol()
@@ -200,15 +215,23 @@ class CORE_EXPORT QgsSymbolLegendNode : public QgsLayerTreeModelLegendNode
      */
     void setSymbol( QgsSymbol *symbol );
 
+    /**
+     * Is an editable symbol.
+     * @note added in QGIS 3.0
+     */
+    bool editable() const { return mItem.editable();}
+
   public slots:
 
-    /** Checks all items belonging to the same layer as this node.
+    /**
+     * Checks all items belonging to the same layer as this node.
      * @note added in QGIS 2.14
      * @see uncheckAllItems()
      */
     void checkAllItems();
 
-    /** Unchecks all items belonging to the same layer as this node.
+    /**
+     * Unchecks all items belonging to the same layer as this node.
      * @note added in QGIS 2.14
      * @see checkAllItems()
      */
@@ -230,7 +253,8 @@ class CORE_EXPORT QgsSymbolLegendNode : public QgsLayerTreeModelLegendNode
     // return a temporary context or null if legendMapViewData are not valid
     QgsRenderContext *createTemporaryRenderContext() const;
 
-    /** Sets all items belonging to the same layer as this node to the same check state.
+    /**
+     * Sets all items belonging to the same layer as this node to the same check state.
      * @param state check state
      */
     void checkAll( bool state );

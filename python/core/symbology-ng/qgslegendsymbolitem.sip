@@ -51,6 +51,19 @@ class QgsLegendSymbolItem
 
     //! Set symbol of the item. Takes ownership of symbol.
     void setSymbol( QgsSymbol* s /Transfer/ );
+
+    /**
+     * Is the symbole editable.
+     * @note added in QGIS 3.0
+     */
+    bool editable() const;
+
+    /**
+     * Set editable
+     * @param editable
+     * @note added in QGIS 3.0
+     */
+    void setEditable( bool editable );
 };
 
 

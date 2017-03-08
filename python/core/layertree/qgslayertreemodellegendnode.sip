@@ -91,6 +91,9 @@ class QgsLayerTreeModelLegendNode : QObject
      */
     virtual QSizeF drawSymbolText( const QgsLegendSettings& settings, ItemContext* ctx, QSizeF symbolSize ) const;
 
+    bool fullWith() const;
+    void setFullWith( bool fullWith );
+
   signals:
     //! Emitted on internal data change so the layer tree model can forward the signal to views
     void dataChanged();
@@ -170,6 +173,12 @@ class QgsSymbolLegendNode : QgsLayerTreeModelLegendNode
      * @note added in QGIS 2.14
      */
     void setSymbol( QgsSymbol* symbol /Transfer/ );
+
+    /**
+     * Is an editable symbol.
+     * @note added in QGIS 3.0
+     */
+    bool editable() const;
 
   public slots:
 

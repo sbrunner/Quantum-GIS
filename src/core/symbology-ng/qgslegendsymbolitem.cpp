@@ -18,25 +18,27 @@
 #include "qgssymbol.h"
 
 QgsLegendSymbolItem::QgsLegendSymbolItem()
-  : mSymbol( nullptr )
-  , mCheckable( false )
-  , mOriginalSymbolPointer( nullptr )
-  , mScaleMinDenom( -1 )
-  , mScaleMaxDenom( -1 )
-  , mLevel( 0 )
+    : mSymbol( nullptr )
+    , mCheckable( false )
+    , mOriginalSymbolPointer( nullptr )
+    , mScaleMinDenom( -1 )
+    , mScaleMaxDenom( -1 )
+    , mLevel( 0 )
+    , mEditable( true )
 {
 }
 
-QgsLegendSymbolItem::QgsLegendSymbolItem( QgsSymbol *symbol, const QString &label, const QString &ruleKey, bool checkable, int scaleMinDenom, int scaleMaxDenom, int level, const QString &parentRuleKey )
-  : mSymbol( symbol ? symbol->clone() : nullptr )
-  , mLabel( label )
-  , mKey( ruleKey )
-  , mCheckable( checkable )
-  , mOriginalSymbolPointer( symbol )
-  , mScaleMinDenom( scaleMinDenom )
-  , mScaleMaxDenom( scaleMaxDenom )
-  , mLevel( level )
-  , mParentKey( parentRuleKey )
+QgsLegendSymbolItem::QgsLegendSymbolItem( QgsSymbol* symbol, const QString& label, const QString& ruleKey, bool checkable, int scaleMinDenom, int scaleMaxDenom, int level, const QString& parentRuleKey )
+    : mSymbol( symbol ? symbol->clone() : nullptr )
+    , mLabel( label )
+    , mKey( ruleKey )
+    , mCheckable( checkable )
+    , mOriginalSymbolPointer( symbol )
+    , mScaleMinDenom( scaleMinDenom )
+    , mScaleMaxDenom( scaleMaxDenom )
+    , mLevel( level )
+    , mParentKey( parentRuleKey )
+    , mEditable( true )
 {
 }
 
