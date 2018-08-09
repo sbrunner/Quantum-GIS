@@ -201,7 +201,7 @@ class TestQgsServerAccessControl(unittest.TestCase):
             if k in os.environ:
                 del os.environ[k]
 
-        self.projectPath = os.path.join(self.testdata_path, "project.qgs")
+        self.projectPath = os.path.join(self.testdata_path, "project_grp.qgs")
         self.assertTrue(os.path.isfile(self.projectPath), 'Could not find project file "{}"'.format(self.projectPath))
 
     def tearDown(self):
