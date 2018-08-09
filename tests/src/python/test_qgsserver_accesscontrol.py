@@ -209,10 +209,6 @@ class TestQgsServerAccessControl(unittest.TestCase):
 
 # # WMS # # WMS # # WMS # #
 
-    def test_tested(self):
-        self.assertTrue(True)
-        self.assertTrue(False)
-
     def test_wms_getcapabilities(self):
         query_string = "&".join(["%s=%s" % i for i in list({
             "MAP": urllib.parse.quote(self.projectPath),
