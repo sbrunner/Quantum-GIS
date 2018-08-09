@@ -209,6 +209,10 @@ class TestQgsServerAccessControl(unittest.TestCase):
 
 # # WMS # # WMS # # WMS # #
 
+    def test_tested(self):
+        self.assertTrue(True)
+        self.assertTrue(False)
+
     def test_wms_getcapabilities(self):
         query_string = "&".join(["%s=%s" % i for i in list({
             "MAP": urllib.parse.quote(self.projectPath),
@@ -896,7 +900,6 @@ class TestQgsServerAccessControl(unittest.TestCase):
 
 # # WCS # # WCS # # WCS # #
 
-
     def test_wcs_getcapabilities(self):
         query_string = "&".join(["%s=%s" % i for i in list({
             "MAP": urllib.parse.quote(self.projectPath),
@@ -1015,7 +1018,6 @@ class TestQgsServerAccessControl(unittest.TestCase):
 
 
 # # WFS/Transactions # #
-
 
     def test_wfstransaction_insert(self):
         data = WFS_TRANSACTION_INSERT.format(x=1000, y=2000, name="test", color="{color}", xml_ns=XML_NS)
