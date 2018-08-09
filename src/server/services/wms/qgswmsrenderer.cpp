@@ -677,8 +677,14 @@ namespace QgsWms
 
     // configure each layer with opacity, selection filter, ...
     bool updateMapExtent = mWmsParameters.bbox().isEmpty();
+    Q_FOREACH ( QgsWmsParametersLayer param, params )
+    {
+      QgsMessageLog::logMessage( "param: " +  param.mNickname );
+    }
     Q_FOREACH ( QgsMapLayer *layer, layers )
     {
+      QgsMessageLog::logMessage( "layer: " +  layerNickname( *layer ) );
+
       checkLayerReadPermissions( layer );
 
       Q_FOREACH ( QgsWmsParametersLayer param, params )
