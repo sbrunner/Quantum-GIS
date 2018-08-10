@@ -35,7 +35,7 @@ from .test_qgsserver_accesscontrol import TestQgsServerAccessControl
 
 
 class TestQgsServerAccessControlWCS(TestQgsServerAccessControl):
-    
+
     def test_wcs_getcapabilities(self):
         query_string = "&".join(["%s=%s" % i for i in list({
             "MAP": urllib.parse.quote(self.projectPath),
@@ -151,7 +151,6 @@ class TestQgsServerAccessControlWCS(TestQgsServerAccessControl):
         self.assertTrue(
             str(response).find('<ServiceException code="RequestNotWellFormed">') != -1,
             "The layer for the COVERAGE 'dem' is not found")
-
 
 
 if __name__ == "__main__":

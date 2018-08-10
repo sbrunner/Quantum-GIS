@@ -35,7 +35,7 @@ from .test_qgsserver_accesscontrol import TestQgsServerAccessControl
 
 
 class TestQgsServerAccessControlWFS(TestQgsServerAccessControl):
-    
+
     def test_wfs_getcapabilities(self):
         query_string = "&".join(["%s=%s" % i for i in list({
             "MAP": urllib.parse.quote(self.projectPath),
@@ -165,8 +165,8 @@ class TestQgsServerAccessControlWFS(TestQgsServerAccessControl):
             "Unexpeced result in GetFeatureInfo\n%s" % response)  # spellok
 
 
-
 # # Subset String # #
+
 
     def test_wfs_getfeature_subsetstring(self):
         data = """<?xml version="1.0" encoding="UTF-8"?>

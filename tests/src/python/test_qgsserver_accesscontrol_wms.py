@@ -593,6 +593,7 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
 
 # # Subset String # #
 
+
     def test_wms_getmap_subsetstring(self):
         query_string = "&".join(["%s=%s" % i for i in list({
             "MAP": urllib.parse.quote(self.projectPath),
@@ -1040,7 +1041,6 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
         self.assertFalse(
             str(response).find("<qgs:pk>") != -1,
             "Unexpected result from GetFeatureInfo Hello/2\n%s" % response)
-
 
 
 if __name__ == "__main__":
