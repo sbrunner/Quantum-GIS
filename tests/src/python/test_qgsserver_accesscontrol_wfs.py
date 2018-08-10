@@ -31,7 +31,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import base64
-from test_qgsserver_accesscontrol import TestQgsServerAccessControl
+from test_qgsserver_accesscontrol import TestQgsServerAccessControl, XML_NS
 
 
 class TestQgsServerAccessControlWFS(TestQgsServerAccessControl):

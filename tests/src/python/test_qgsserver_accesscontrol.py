@@ -33,6 +33,18 @@ import urllib.error
 import base64
 
 
+XML_NS = \
+    'service="WFS" version="1.0.0" ' \
+    'xmlns:wfs="http://www.opengis.net/wfs" ' \
+    'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
+    'xmlns:ogc="http://www.opengis.net/ogc" ' \
+    'xmlns="http://www.opengis.net/wfs" updateSequence="0" ' \
+    'xmlns:xlink="http://www.w3.org/1999/xlink" ' \
+    'xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-capabilities.xsd" ' \
+    'xmlns:gml="http://www.opengis.net/gml" ' \
+    'xmlns:ows="http://www.opengis.net/ows" '
+
+
 class RestrictedAccessControl(QgsAccessControlFilter):
 
     """ Used to have restriction access """
