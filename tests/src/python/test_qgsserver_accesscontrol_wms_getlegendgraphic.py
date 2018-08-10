@@ -96,5 +96,6 @@ class TestQgsServerAccessControlWMSGetlegendgraphic(TestQgsServerAccessControl):
             "Not allowed GetLegendGraphic"
         )
 
+
 if __name__ == "__main__":
     unittest.main()

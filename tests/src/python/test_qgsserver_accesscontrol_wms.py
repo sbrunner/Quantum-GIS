@@ -51,9 +51,6 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
         self.assertTrue(
             str(response).find("<Name>Country</Name>") != -1,
             "No Country layer in GetCapabilities\n%s" % response)
-        self.assertTrue(
-            str(response).find("<Name>Country_grp</Name>") != -1,
-            "No Country_grp layer in GetCapabilities\n%s" % response)
 
         response, headers = self._get_restricted(query_string)
         self.assertTrue(
@@ -62,9 +59,6 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
         self.assertFalse(
             str(response).find("<Name>Country</Name>") != -1,
             "Country layer in GetCapabilities\n%s" % response)
-        self.assertFalse(
-            str(response).find("<Name>Country_grp</Name>") != -1,
-            "Country_grp layer in GetCapabilities\n%s" % response)
 
     def test_wms_getprojectsettings(self):
         query_string = "&".join(["%s=%s" % i for i in list({
