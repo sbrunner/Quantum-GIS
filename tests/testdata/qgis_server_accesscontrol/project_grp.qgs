@@ -40,7 +40,7 @@
     <layer-tree-layer source="./dem.tif" id="dem20150730091219559" providerKey="gdal" expanded="0" checked="Qt::Checked" name="dem">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-group expanded="1" checked="Qt::Checked" name="Contry_grp">
+    <layer-tree-group expanded="1" checked="Qt::Checked" name="Country_grp">
       <customproperties/>
       <layer-tree-layer source="dbname='/home/sbrunner/workspace/QGIS/tests/testdata/qgis_server_accesscontrol/helloworld.db' table=&quot;country&quot; (geom) sql=" id="country20131022151106556" providerKey="spatialite" expanded="1" checked="Qt::Checked" name="Country">
         <customproperties/>
@@ -133,7 +133,7 @@
         <legendlayerfile layerid="dem20150730091219559" isInOverview="0" visible="1"/>
       </filegroup>
     </legendlayer>
-    <legendgroup open="true" checked="Qt::Checked" name="Contry_grp">
+    <legendgroup open="true" checked="Qt::Checked" name="Country_grp">
       <legendlayer drawingOrder="-1" open="true" showFeatureCount="0" checked="Qt::Checked" name="Country">
         <filegroup hidden="false" open="true">
           <legendlayerfile layerid="country20131022151106556" isInOverview="0" visible="1"/>
