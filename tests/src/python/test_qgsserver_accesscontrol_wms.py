@@ -31,7 +31,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import base64
-from .test_qgsserver_accesscontrol import TestQgsServerAccessControl
+from test_qgsserver_accesscontrol import TestQgsServerAccessControl
 
 
 class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
@@ -592,7 +592,6 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
 
 
 # # Subset String # #
-
 
     def test_wms_getmap_subsetstring(self):
         query_string = "&".join(["%s=%s" % i for i in list({

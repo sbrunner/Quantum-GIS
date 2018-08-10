@@ -31,7 +31,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import base64
-from .test_qgsserver_accesscontrol import TestQgsServerAccessControl
+from test_qgsserver_accesscontrol import TestQgsServerAccessControl
 
 
 class TestQgsServerAccessControlWFS(TestQgsServerAccessControl):
@@ -166,7 +166,6 @@ class TestQgsServerAccessControlWFS(TestQgsServerAccessControl):
 
 
 # # Subset String # #
-
 
     def test_wfs_getfeature_subsetstring(self):
         data = """<?xml version="1.0" encoding="UTF-8"?>
