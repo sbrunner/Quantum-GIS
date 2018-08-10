@@ -190,66 +190,6 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
             str(response).find("<se:FeatureTypeName>Country_grp</se:FeatureTypeName>") != -1,
             "Country_grp layer in DescribeLayer\n%s" % response)
 
-    def test_wms_getlegendgraphic_hello(self):
-        query_string = "&".join(["%s=%s" % i for i in list({
-            "MAP": urllib.parse.quote(self.projectPath),
-            "SERVICE": "WMS",
-            "VERSION": "1.1.1",
-            "REQUEST": "GetLegendGraphic",
-            "LAYERS": "Hello",
-            "FORMAT": "image/png"
-        }.items())])
-
-        response, headers = self._get_fullaccess(query_string)
-        self._img_diff_error(response, headers, "WMS_GetLegendGraphic_Hello", 250, QSize(10, 10))
-
-        response, headers = self._get_restricted(query_string)
-        self._img_diff_error(response, headers, "WMS_GetLegendGraphic_Hello", 250, QSize(10, 10))
-
-    def test_wms_getlegendgraphic_country(self):
-        query_string = "&".join(["%s=%s" % i for i in list({
-            "MAP": urllib.parse.quote(self.projectPath),
-            "SERVICE": "WMS",
-            "VERSION": "1.1.1",
-            "REQUEST": "GetLegendGraphic",
-            "LAYERS": "Country",
-            "FORMAT": "image/png"
-        }.items())])
-
-        response, headers = self._get_fullaccess(query_string)
-        self._img_diff_error(response, headers, "WMS_GetLegendGraphic_Country", 250, QSize(10, 10))
-
-        response, headers = self._get_restricted(query_string)
-        self.assertEqual(
-            headers.get("Content-Type"), "text/xml; charset=utf-8",
-            "Content type for GetMap is wrong: %s" % headers.get("Content-Type"))
-        self.assertTrue(
-            str(response).find('<ServiceException code="Security">') != -1,
-            "Not allowed GetLegendGraphic"
-        )
-
-    def test_wms_getlegendgraphic_country_grp(self):
-        query_string = "&".join(["%s=%s" % i for i in list({
-            "MAP": urllib.parse.quote(self.projectPath),
-            "SERVICE": "WMS",
-            "VERSION": "1.1.1",
-            "REQUEST": "GetLegendGraphic",
-            "LAYERS": "Country_grp",
-            "FORMAT": "image/png"
-        }.items())])
-
-        response, headers = self._get_fullaccess(query_string)
-        self._img_diff_error(response, headers, "WMS_GetLegendGraphic_Country", 250, QSize(10, 10))
-
-        response, headers = self._get_restricted(query_string)
-        self.assertEqual(
-            headers.get("Content-Type"), "text/xml; charset=utf-8",
-            "Content type for GetMap is wrong: %s" % headers.get("Content-Type"))
-        self.assertTrue(
-            str(response).find('<ServiceException code="Security">') != -1,
-            "Not allowed GetLegendGraphic"
-        )
-
     def test_wms_getmap(self):
         query_string = "&".join(["%s=%s" % i for i in list({
             "MAP": urllib.parse.quote(self.projectPath),
