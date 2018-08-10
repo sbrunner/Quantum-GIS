@@ -679,11 +679,11 @@ namespace QgsWms
     bool updateMapExtent = mWmsParameters.bbox().isEmpty();
     Q_FOREACH ( QgsWmsParametersLayer param, params )
     {
-      QgsMessageLog::logMessage( "param: " +  param.mNickname );
+      QgsMessageLog::logMessage( "param: " +  param.mNickname, "param", Qgis::Critical );
     }
     Q_FOREACH ( QgsMapLayer *layer, layers )
     {
-      QgsMessageLog::logMessage( "layer: " +  layerNickname( *layer ) );
+      QgsMessageLog::logMessage( "layer: " +  layerNickname( *layer ), "layer", Qgis::Critical );
 
       checkLayerReadPermissions( layer );
 
