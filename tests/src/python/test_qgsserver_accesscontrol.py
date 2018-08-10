@@ -85,11 +85,6 @@ class RestrictedAccessControl(QgsAccessControlFilter):
             return super(RestrictedAccessControl, self).layerPermissions(layer)
 
         rh = self.serverInterface().requestHandler()
-        print(layer.name())
-        print(rh.parameterMap())
-        print(rh.parameter("TEST"))
-        print(rh.parameter("LAYER_PERM"))
-
         rights = QgsAccessControlFilter.LayerPermissions()
         # Used to test WFS transactions
         if rh.parameterMap().get("LAYER_PERM") == "no":
