@@ -118,9 +118,6 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
             str(response).find("name=\"Country\"") != -1,
             "No Country layer in GetProjectSettings\n%s" % response)
         self.assertTrue(
-            str(response).find("name=\"Country_grp\"") != -1,
-            "No Country_grp layer in GetProjectSettings\n%s" % response)
-        self.assertTrue(
             str(response).find("name=\"Country\"")
             < str(response).find("name=\"Hello\""),
             "Hello layer not after Country layer\n%s" % response)
@@ -131,10 +128,7 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
             "No Hello layer in GetContext\n%s" % response)
         self.assertFalse(
             str(response).find("name=\"Country\"") != -1,
-            "No Country layer in GetProjectSettings\n%s" % response)
-        self.assertFalse(
-            str(response).find("name=\"Country_grp\"") != -1,
-            "No Country_grp layer in GetProjectSettings\n%s" % response)
+            "Country layer in GetProjectSettings\n%s" % response)
 
     def test_wms_describelayer_hello(self):
         query_string = "&".join(["%s=%s" % i for i in list({
