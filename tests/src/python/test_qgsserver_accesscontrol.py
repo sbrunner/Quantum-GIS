@@ -92,10 +92,10 @@ class RestrictedAccessControl(QgsAccessControlFilter):
 
         rights = QgsAccessControlFilter.LayerPermissions()
         # Used to test WFS transactions
-        if rh.parameterMap()["LAYER_PERM"] == "no":
+        if rh.parameterMap().get("LAYER_PERM") == "no":
             return rights
         # Used to test the WCS
-        if rh.parameterMap()["TEST"] == "dem":
+        if rh.parameterMap().get("TEST") == "dem":
             rights.canRead = layer.name() != "dem"
         else:
             rights.canRead = layer.name() != "Country"
