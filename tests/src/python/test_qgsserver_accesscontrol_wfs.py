@@ -157,12 +157,12 @@ class TestQgsServerAccessControlWFS(TestQgsServerAccessControl):
         response, headers = self._post_fullaccess(data)
         self.assertTrue(
             str(response).find("<qgs:pk>1</qgs:pk>") != -1,
-            "No result in GetFeatureInfo\n%s" % response)
+            "No result in GetFeature\n%s" % response)
 
         response, headers = self._post_restricted(data)
         self.assertFalse(
             str(response).find("<qgs:pk>1</qgs:pk>") != -1,
-            "Unexpeced result in GetFeatureInfo\n%s" % response)  # spellok
+            "Unexpeced result in GetFeature\n%s" % response)  # spellok
 
 
 # # Subset String # #
