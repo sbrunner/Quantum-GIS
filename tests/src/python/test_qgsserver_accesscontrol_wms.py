@@ -276,8 +276,6 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
             "Not allowed do a GetMap on Country_grp"
         )
 
-        self.assertTrue(False)
-
     def test_wms_getfeatureinfo_hello(self):
         query_string = "&".join(["%s=%s" % i for i in list({
             "MAP": urllib.parse.quote(self.projectPath),
