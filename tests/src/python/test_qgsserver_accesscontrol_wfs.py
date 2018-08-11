@@ -150,7 +150,7 @@ class TestQgsServerAccessControlWFS(TestQgsServerAccessControl):
             <wfs:GetFeature {xml_ns}>
             <wfs:Query typeName="Country" srsName="EPSG:3857" xmlns:feature="http://www.qgis.org/gml">
             <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:PropertyIsEqualTo>
-            <ogc:PropertyName>pk</ogc:PropertyName>
+            <ogc:PropertyName>pkuid</ogc:PropertyName>
             <ogc:Literal>1</ogc:Literal>
             </ogc:PropertyIsEqualTo></ogc:Filter></wfs:Query></wfs:GetFeature>""".format(xml_ns=XML_NS)
 
