@@ -27,9 +27,6 @@ from qgis.server import QgsServer, QgsAccessControlFilter, QgsServerRequest, Qgs
 from qgis.core import QgsRenderChecker, QgsApplication
 from qgis.PyQt.QtCore import QSize
 import tempfile
-import urllib.request
-import urllib.parse
-import urllib.error
 import base64
 
 

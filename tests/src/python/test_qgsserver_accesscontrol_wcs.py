@@ -14,23 +14,10 @@ __revision__ = '$Format:%H$'
 
 print('CTEST_FULL_OUTPUT')
 
-import qgis  # NOQA
-
-import os
-from shutil import copyfile
-from math import sqrt
 from qgis.testing import unittest
-from utilities import unitTestDataPath
-from osgeo import gdal
-from osgeo.gdalconst import GA_ReadOnly
-from qgis.server import QgsServer, QgsAccessControlFilter, QgsServerRequest, QgsBufferServerRequest, QgsBufferServerResponse
-from qgis.core import QgsRenderChecker, QgsApplication
-from qgis.PyQt.QtCore import QSize
-import tempfile
 import urllib.request
 import urllib.parse
 import urllib.error
-import base64
 from test_qgsserver_accesscontrol import TestQgsServerAccessControl
 
 

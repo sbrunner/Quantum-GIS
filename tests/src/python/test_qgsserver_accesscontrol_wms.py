@@ -14,23 +14,10 @@ __revision__ = '$Format:%H$'
 
 print('CTEST_FULL_OUTPUT')
 
-import qgis  # NOQA
-
-import os
-from shutil import copyfile
-from math import sqrt
 from qgis.testing import unittest
-from utilities import unitTestDataPath
-from osgeo import gdal
-from osgeo.gdalconst import GA_ReadOnly
-from qgis.server import QgsServer, QgsAccessControlFilter, QgsServerRequest, QgsBufferServerRequest, QgsBufferServerResponse
-from qgis.core import QgsRenderChecker, QgsApplication
-from qgis.PyQt.QtCore import QSize
-import tempfile
 import urllib.request
 import urllib.parse
 import urllib.error
-import base64
 from test_qgsserver_accesscontrol import TestQgsServerAccessControl
 
 
@@ -58,7 +45,7 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
             "No Hello layer in GetCapabilities\n%s" % response)
         self.assertFalse(
             str(response).find("<Name>Country</Name>") != -1,
-            "Country layer in GetCapabilities\n%s" % response)
+            "Unexpected Country layer in GetCapabilities\n%s" % response)
 
     def test_wms_getprojectsettings(self):
         query_string = "&".join(["%s=%s" % i for i in list({
@@ -88,13 +75,13 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
             "No Hello layer in GetProjectSettings\n%s" % response)
         self.assertFalse(
             str(response).find("<TreeName>Country</TreeName>") != -1,
-            "Country layer in GetProjectSettings\n%s" % response)
+            "Unexpected Country layer in GetProjectSettings\n%s" % response)
         self.assertFalse(
             str(response).find("<TreeName>Country_grp</TreeName>") != -1,
-            "Country_grp layer in GetProjectSettings\n%s" % response)
+            "Unexpected Country_grp layer in GetProjectSettings\n%s" % response)
         self.assertTrue(
             str(response).find("<LayerDrawingOrder>Country_Diagrams,Country_Labels,dem,Hello_Filter_SubsetString,Hello_Project_SubsetString,Hello_SubsetString,Hello,db_point</LayerDrawingOrder>") != -1,
-            "LayerDrawingOrder in GetProjectSettings\n%s" % response)
+            "Wrong LayerDrawingOrder in GetProjectSettings\n%s" % response)
 
     def test_wms_getprojectsettings(self):
         query_string = "&".join(["%s=%s" % i for i in list({
@@ -122,7 +109,7 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
             "No Hello layer in GetContext\n%s" % response)
         self.assertFalse(
             str(response).find("name=\"Country\"") != -1,
-            "Country layer in GetProjectSettings\n%s" % response)
+            "Unexpected Country layer in GetProjectSettings\n%s" % response)
 
     def test_wms_describelayer_hello(self):
         query_string = "&".join(["%s=%s" % i for i in list({
@@ -162,7 +149,7 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
         response, headers = self._get_restricted(query_string)
         self.assertFalse(
             str(response).find("<se:FeatureTypeName>Country</se:FeatureTypeName>") != -1,
-            "Country layer in DescribeLayer\n%s" % response)
+            "Unexpected Country layer in DescribeLayer\n%s" % response)
 
     def test_wms_getmap(self):
         query_string = "&".join(["%s=%s" % i for i in list({
@@ -342,8 +329,6 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
             str(response).find("<qgs:color>NULL</qgs:color>") != -1,  # spellok
             "Unexpected color NULL in result of GetFeatureInfo\n%s" % response)
 
-    """
-    GetFeatureInfo don works on group
     def test_wms_getfeatureinfo_hello_grp(self):
         query_string = "&".join(["%s=%s" % i for i in list({
             "MAP": urllib.parse.quote(self.projectPath),
@@ -409,7 +394,6 @@ class TestQgsServerAccessControlWMS(TestQgsServerAccessControl):
         self.assertFalse(
             str(response).find("<qgs:color>NULL</qgs:color>") != -1,  # spellok
             "Unexpected color NULL in result of GetFeatureInfo\n%s" % response)
-    """
 
     def test_wms_getfeatureinfo_hello2(self):
         query_string = "&".join(["%s=%s" % i for i in list({
