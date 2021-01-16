@@ -17,8 +17,12 @@
  ***************************************************************************/
 
 #include "qgsservercachemanager.h"
+#include "qgsserverprojectutils.h"
+#include "qgsmessagelog.h"
+#include "qgis.h"
 
-QgsServerCacheManager::QgsServerCacheManager()
+QgsServerCacheManager::QgsServerCacheManager( const QgsServerSettings *settings ):
+  mSettings( settings )
 {
   mPluginsServerCaches.reset( new QgsServerCacheFilterMap() );
 }
@@ -56,7 +60,7 @@ QgsServerCacheManager::~QgsServerCacheManager()
 bool QgsServerCacheManager::getCachedDocument( QDomDocument *doc, const QgsProject *project, const QgsServerRequest &request, QgsAccessControl *accessControl ) const
 {
   bool cache = true;
-  QString key = getCacheKey( cache, accessControl );
+  QString key = getCacheKey( cache, accessControl, request );
 
   if ( !cache )
   {
@@ -89,7 +93,7 @@ bool QgsServerCacheManager::getCachedDocument( QDomDocument *doc, const QgsProje
 bool QgsServerCacheManager::setCachedDocument( const QDomDocument *doc, const QgsProject *project, const QgsServerRequest &request, QgsAccessControl *accessControl ) const
 {
   bool cache = true;
-  QString key = getCacheKey( cache, accessControl );
+  QString key = getCacheKey( cache, accessControl, request );
 
   if ( !cache )
   {
@@ -110,7 +114,7 @@ bool QgsServerCacheManager::setCachedDocument( const QDomDocument *doc, const Qg
 bool QgsServerCacheManager::deleteCachedDocument( const QgsProject *project, const QgsServerRequest &request, QgsAccessControl *accessControl ) const
 {
   bool cache = true;
-  QString key = getCacheKey( cache, accessControl );
+  QString key = getCacheKey( cache, accessControl, request );
 
   QgsServerCacheFilterMap::const_iterator scIterator;
   for ( scIterator = mPluginsServerCaches->constBegin(); scIterator != mPluginsServerCaches->constEnd(); ++scIterator )
@@ -139,7 +143,7 @@ bool QgsServerCacheManager::deleteCachedDocuments( const QgsProject *project ) c
 QByteArray QgsServerCacheManager::getCachedImage( const QgsProject *project, const QgsServerRequest &request, QgsAccessControl *accessControl ) const
 {
   bool cache = true;
-  QString key = getCacheKey( cache, accessControl );
+  QString key = getCacheKey( cache, accessControl, request );
 
   QgsServerCacheFilterMap::const_iterator scIterator;
   for ( scIterator = mPluginsServerCaches->constBegin(); scIterator != mPluginsServerCaches->constEnd(); ++scIterator )
@@ -156,7 +160,7 @@ QByteArray QgsServerCacheManager::getCachedImage( const QgsProject *project, con
 bool QgsServerCacheManager::setCachedImage( const QByteArray *img, const QgsProject *project, const QgsServerRequest &request, QgsAccessControl *accessControl ) const
 {
   bool cache = true;
-  QString key = getCacheKey( cache, accessControl );
+  QString key = getCacheKey( cache, accessControl, request );
 
   QgsServerCacheFilterMap::const_iterator scIterator;
   for ( scIterator = mPluginsServerCaches->constBegin(); scIterator != mPluginsServerCaches->constEnd(); ++scIterator )
@@ -172,7 +176,7 @@ bool QgsServerCacheManager::setCachedImage( const QByteArray *img, const QgsProj
 bool QgsServerCacheManager::deleteCachedImage( const QgsProject *project, const QgsServerRequest &request, QgsAccessControl *accessControl ) const
 {
   bool cache = true;
-  QString key = getCacheKey( cache, accessControl );
+  QString key = getCacheKey( cache, accessControl, request );
 
   QgsServerCacheFilterMap::const_iterator scIterator;
   for ( scIterator = mPluginsServerCaches->constBegin(); scIterator != mPluginsServerCaches->constEnd(); ++scIterator )
@@ -203,9 +207,10 @@ void QgsServerCacheManager::registerServerCache( QgsServerCacheFilter *serverCac
   mPluginsServerCaches->insert( priority, serverCache );
 }
 
-QString QgsServerCacheManager::getCacheKey( bool &cache, QgsAccessControl *accessControl ) const
+QString QgsServerCacheManager::getCacheKey( bool &cache, QgsAccessControl *accessControl, const QgsServerRequest &request ) const
 {
   QStringList cacheKeyList;
+  cacheKeyList << QgsServerProjectUtils::serviceUrl( request.serverParameters().service(), request, mSettings );
   if ( accessControl )
   {
     cache = accessControl->fillCacheKey( cacheKeyList );

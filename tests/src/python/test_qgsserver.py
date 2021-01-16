@@ -256,11 +256,11 @@ class QgsServerTestBase(unittest.TestCase):
 
         self.assertTrue(test, message)
 
-    def _execute_request(self, qs, requestMethod=QgsServerRequest.GetMethod, data=None):
+    def _execute_request(self, qs, requestMethod=QgsServerRequest.GetMethod, data=None, headers=None):
         request = QgsBufferServerRequest(qs, requestMethod, {}, data)
         response = QgsBufferServerResponse()
         self.server.handleRequest(request, response)
-        headers = []
+        headers = headers if headers else []
         rh = response.headers()
         rk = sorted(rh.keys())
         for k in rk:
@@ -452,6 +452,53 @@ class TestQgsServer(QgsServerTestBase):
                 self.assertEqual("\"my_wcs_advertised_url" in item, True)
                 item_found = True
         self.assertTrue(item_found)
+
+        # Service URL in header
+        for header_name, header_value in (("Service-Url", "test1"), ("Wcs-Service-Url", "test2")):
+            # empty url in project
+            project = os.path.join(self.testdata_path, "test_project_without_urls.qgs")
+            qs = "?" + "&".join(["%s=%s" % i for i in list({
+                "MAP": urllib.parse.quote(project),
+                "SERVICE": "WCS",
+                "VERSION": "1.0.0",
+                "REQUEST": "GetCapabilities",
+                "STYLES": ""
+            }.items())])
+
+            r, h = self._result(self.F(qs, headers=[[header_name, header_value]]))
+
+            item_found = False
+            for item in str(r).split("\\n"):
+                if "OnlineResource" in item:
+                    self.assertEqual(header_value in item, True)
+                    item_found = True
+            self.assertTrue(item_found)
+
+        # Other headers combinaison
+        for headers, online_resource in (
+            ([["Forwarded", "host=test3;proto=https"]], "https://test3"),
+            ([["Forwarded", "host=test4;proto=https, host=test5;proto=https"]], "https://test4"),
+            ([["X-Forwarded-Host", "test6"], ["X-Forwarded-Proto", "https"]], "https://test6"),
+            ([["Host", "test7"]], "test7"),
+        ):
+            # empty url in project
+            project = os.path.join(self.testdata_path, "test_project_without_urls.qgs")
+            qs = "?" + "&".join(["%s=%s" % i for i in list({
+                "MAP": urllib.parse.quote(project),
+                "SERVICE": "WCS",
+                "VERSION": "1.0.0",
+                "REQUEST": "GetCapabilities",
+                "STYLES": ""
+            }.items())])
+
+            r, h = self._result(self._execute_request(qs, headers=headers))
+
+            item_found = False
+            for item in str(r).split("\\n"):
+                if "OnlineResource" in item:
+                    self.assertEqual(online_resource in item, True)
+                    item_found = True
+            self.assertTrue(item_found)
 
 
 if __name__ == '__main__':

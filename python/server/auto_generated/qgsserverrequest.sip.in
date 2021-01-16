@@ -34,6 +34,15 @@ class QgsServerRequest
       PatchMethod
     };
 
+    static const QString HOST;
+    static const QString FORWARDED;
+    static const QString X_FORWARDED_HOST;
+    static const QString X_FORWARDED_PROTO;
+    static const QString X_QGIS_SERVICE_URL;
+    static const QString X_QGIS_WMS_SERVICE_URL;
+    static const QString X_QGIS_WFS_SERVICE_URL;
+    static const QString X_QGIS_WCS_SERVICE_URL;
+    static const QString X_QGIS_WMTS_SERVICE_URL;
 
     QgsServerRequest();
 %Docstring
@@ -109,7 +118,7 @@ Gets a parameter value
 Remove a parameter
 %End
 
-    QString header( const QString &name ) const;
+    virtual QString header( const QString &name ) const;
 %Docstring
 Returns the header value
 
@@ -162,6 +171,13 @@ by default this is equal to the url seen by QGIS server
 .. versionadded:: 3.6
 %End
 
+    QUrl baseUrl() const;
+%Docstring
+Returns the base URL of QGIS server
+
+.. versionadded:: 3.20
+%End
+
     void setMethod( QgsServerRequest::Method method );
 %Docstring
 Set the request method
@@ -185,6 +201,12 @@ Set the request original ``url`` (the request url as seen by the web server)
 .. versionadded:: 3.6
 %End
 
+    void setBaseUrl( const QUrl &url );
+%Docstring
+Set the base URL of QGIS server
+
+.. versionadded:: 3.20
+%End
 
 };
 

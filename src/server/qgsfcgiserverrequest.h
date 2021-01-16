@@ -41,6 +41,14 @@ class SERVER_EXPORT QgsFcgiServerRequest: public QgsServerRequest
      */
     bool hasError() const { return mHasError; }
 
+    /**
+     * Returns the header value
+     * \param name of the header
+     * \return the header value or an empty string
+     * \since QGIS 3.20
+     */
+    QString header( const QString &name ) const override;
+
   private:
     void readData();
 
@@ -48,6 +56,7 @@ class SERVER_EXPORT QgsFcgiServerRequest: public QgsServerRequest
     // about the request
     void printRequestInfos( const QUrl &url );
 
+    void fillServer( QUrl &url ) const;
 
     QByteArray mData;
     bool       mHasError = false;
