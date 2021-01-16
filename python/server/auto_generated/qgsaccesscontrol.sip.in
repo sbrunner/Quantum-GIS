@@ -129,13 +129,11 @@ Are we authorized to modify the following geometry
 :return: ``True`` if we are allowed to edit the feature
 %End
 
-    bool fillCacheKey( QStringList &cacheKey ) const;
+    void fillCacheKey( QStringList &cacheKey ) const;
 %Docstring
 Fill the capabilities caching key
 
 :param cacheKey: the list to fill with a cache variant
-
-:return: ``False`` if we can't create a cache
 %End
 
     void registerAccessControl( QgsAccessControlFilter *accessControl, int priority = 0 );

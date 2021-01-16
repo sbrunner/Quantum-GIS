@@ -20,6 +20,17 @@
 #include "qgsserverrequest.h"
 #include <QUrlQuery>
 
+
+const QString QgsServerRequest::HOST = QStringLiteral( "Host" );
+const QString QgsServerRequest::FORWARDED = QStringLiteral( "Forwarded" );
+const QString QgsServerRequest::X_FORWARDED_HOST = QStringLiteral( "X-Forwarded-Host" );
+const QString QgsServerRequest::X_FORWARDED_PROTO = QStringLiteral( "X-Forwarded-Proto" );
+const QString QgsServerRequest::X_QGIS_SERVICE_URL = QStringLiteral( "X-Qgis-Service-Url" );
+const QString QgsServerRequest::X_QGIS_WMS_SERVICE_URL = QStringLiteral( "X-Qgis-Wms-Service-Url" );
+const QString QgsServerRequest::X_QGIS_WFS_SERVICE_URL = QStringLiteral( "X-Qgis-Wfs-Service-Url" );
+const QString QgsServerRequest::X_QGIS_WCS_SERVICE_URL = QStringLiteral( "X-Qgis-Wcs-Service-Url" );
+const QString QgsServerRequest::X_QGIS_WMTS_SERVICE_URL = QStringLiteral( "X-Qgis-Wmts-Service-Url" );
+
 QgsServerRequest::QgsServerRequest( const QString &url, Method method, const Headers &headers )
   : QgsServerRequest( QUrl( url ), method, headers )
 {
@@ -28,6 +39,7 @@ QgsServerRequest::QgsServerRequest( const QString &url, Method method, const Hea
 QgsServerRequest::QgsServerRequest( const QUrl &url, Method method, const Headers &headers )
   : mUrl( url )
   , mOriginalUrl( url )
+  , mBaseUrl( url )
   , mMethod( method )
   , mHeaders( headers )
 {
@@ -37,6 +49,7 @@ QgsServerRequest::QgsServerRequest( const QUrl &url, Method method, const Header
 QgsServerRequest::QgsServerRequest( const QgsServerRequest &other )
   : mUrl( other.mUrl )
   , mOriginalUrl( other.mOriginalUrl )
+  , mBaseUrl( other.mBaseUrl )
   , mMethod( other.mMethod )
   , mHeaders( other.mHeaders )
   , mParams( other.mParams )
@@ -54,7 +67,6 @@ QString QgsServerRequest::header( const QString &name ) const
   return mHeaders.value( name );
 }
 
-
 void QgsServerRequest::setHeader( const QString &name, const QString &value )
 {
   mHeaders.insert( name, value );
@@ -64,7 +76,6 @@ QMap<QString, QString> QgsServerRequest::headers() const
 {
   return mHeaders;
 }
-
 
 void QgsServerRequest::removeHeader( const QString &name )
 {
@@ -84,6 +95,16 @@ QUrl QgsServerRequest::originalUrl() const
 void QgsServerRequest::setOriginalUrl( const QUrl &url )
 {
   mOriginalUrl = url;
+}
+
+QUrl QgsServerRequest::baseUrl() const
+{
+  return mBaseUrl;
+}
+
+void QgsServerRequest::setBaseUrl( const QUrl &url )
+{
+  mBaseUrl = url;
 }
 
 QgsServerRequest::Method QgsServerRequest::method() const
@@ -148,4 +169,3 @@ const QString QgsServerRequest::queryParameter( const QString &name, const QStri
   }
   return QUrl::fromPercentEncoding( QUrlQuery( mUrl ).queryItemValue( name ).toUtf8() );
 }
-
