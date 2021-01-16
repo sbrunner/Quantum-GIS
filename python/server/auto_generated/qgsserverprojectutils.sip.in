@@ -340,13 +340,14 @@ Returns the restricted composer list.
 :return: the restricted composer list if defined in project.
 %End
 
-  QString wmsServiceUrl( const QgsProject &project );
+  QString wmsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings *settings );
 %Docstring
-Returns the WMS service url defined in a QGIS project.
+Returns the WMS service url.
 
 :param project: the QGIS project
+:param request: the request
 
-:return: url if defined in project, an empty string otherwise.
+:return: url to use for this service
 %End
 
   QString wmsRootName( const QgsProject &project );
@@ -355,7 +356,7 @@ Returns the WMS root layer name defined in a QGIS project.
 
 :param project: the QGIS project
 
-:return: root layer name if defined in project, an empty string otherwise.
+:return: root layer name to use for this service
 %End
 
   QStringList wmsRestrictedLayers( const QgsProject &project );
@@ -385,13 +386,14 @@ Returns the WMS Extent restriction.
 :return: the WMS Extent restriction.
 %End
 
-  QString wfsServiceUrl( const QgsProject &project );
+  QString wfsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings *settings );
 %Docstring
-Returns the WFS service url defined in a QGIS project.
+Returns the WFS service url.
 
 :param project: the QGIS project
+:param request: the request
 
-:return: url if defined in project, an empty string otherwise.
+:return: url to use for this service
 %End
 
   QStringList wfsLayerIds( const QgsProject &project );
@@ -441,13 +443,14 @@ Returns the Layer ids list defined in a QGIS project as published as WFS-T with 
 :return: the Layer ids list.
 %End
 
-  QString wcsServiceUrl( const QgsProject &project );
+  QString wcsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings *settings );
 %Docstring
-Returns the WCS service url defined in a QGIS project.
+Returns the WCS service url.
 
 :param project: the QGIS project
+:param request: the request
 
-:return: url if defined in project, an empty string otherwise.
+:return: url to use for this service
 %End
 
   QStringList wcsLayerIds( const QgsProject &project );
@@ -459,15 +462,28 @@ Returns the Layer ids list defined in a QGIS project as published in WCS.
 :return: the Layer ids list.
 %End
 
-  QString wmtsServiceUrl( const QgsProject &project );
+  QString wmtsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings *settings );
 %Docstring
-Returns the WMTS service url defined in a QGIS project.
+Returns the WMTS service url.
 
 :param project: the QGIS project
+:param request: the request
 
-:return: url if defined in project, an empty string otherwise.
+:return: url to use for this service
 
 .. versionadded:: 3.4
+%End
+
+  QString serviceUrl( const QString &service, const QgsServerRequest &request, const QgsServerSettings *settings );
+%Docstring
+Returns the service url defined in the environment variable or with HTTP header.
+
+:param request: the request
+:param service: the used service
+
+:return: url to use for this service
+
+.. versionadded:: 3.20
 %End
 };
 

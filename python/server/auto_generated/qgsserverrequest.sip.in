@@ -34,6 +34,20 @@ class QgsServerRequest
       PatchMethod
     };
 
+    enum Header
+    {
+      HOST,
+      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
+      // https://tools.ietf.org/html/rfc7239
+      FORWARDED,
+      X_FORWARDED_HOST,
+      X_FORWARDED_PROTO,
+      X_QGIS_SERVICE_URL,
+      X_QGIS_WMS_SERVICE_URL,
+      X_QGIS_WFS_SERVICE_URL,
+      X_QGIS_WCS_SERVICE_URL,
+      X_QGIS_WMTS_SERVICE_URL,
+    };
 
     QgsServerRequest();
 %Docstring
@@ -118,6 +132,17 @@ Returns the header value
 :return: the header value or an empty string
 %End
 
+    QString headerEnum( const QgsServerRequest::Header header ) const;
+%Docstring
+Returns the header value, From the enum, also use the standad cgi environment variables
+
+:param header: the header
+
+:return: the header value or an empty string
+
+.. versionadded:: 3.20
+%End
+
     void setHeader( const QString &name, const QString &value );
 %Docstring
 Set an header
@@ -172,6 +197,14 @@ Set the request method
 Returns the query string parameter with the given ``name`` from the request URL, a ``defaultValue`` can be specified.
 
 .. versionadded:: 3.10
+%End
+
+    const QString scriptName() const;
+%Docstring
+Returns the script protocol.
+See also https://tools.ietf.org/html/rfc3875#section-4.1.13
+
+.. versionadded:: 3.20
 %End
 
   protected:

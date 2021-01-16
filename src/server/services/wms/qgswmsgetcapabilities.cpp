@@ -76,7 +76,7 @@ namespace QgsWms
                                    const QStringList &crsList, const QStringList &constrainedCrsList );
 
     void appendLayerStyles( QDomDocument &doc, QDomElement &layerElem, QgsMapLayer *currentLayer,
-                            const QgsProject *project, const QString &version, const QgsServerRequest &request );
+                            const QgsProject *project, const QString &version, const QgsServerRequest &request, const QgsServerSettings *settings );
 
     void appendLayersFromTreeGroup( QDomDocument &doc,
                                     QDomElement &parentLayer,
@@ -106,7 +106,7 @@ namespace QgsWms
     QgsCapabilitiesCache *capabilitiesCache = serverIface->capabilitiesCache();
     QStringList cacheKeyList;
     cacheKeyList << ( projectSettings ? QStringLiteral( "projectSettings" ) : version );
-    cacheKeyList << request.url().host();
+    cacheKeyList << QgsServerProjectUtils::serviceUrl( request.serverParameters().service(), request, serverIface->serverSettings() );
     bool cache = true;
 
 #ifdef HAVE_SERVER_PYTHON_PLUGINS
@@ -173,7 +173,7 @@ namespace QgsWms
     QDomElement wmsCapabilitiesElement;
 
     // Get service URL
-    QUrl href = serviceUrl( request, project );
+    QUrl href = serviceUrl( request, project, serverIface->serverSettings() );
 
     //href needs to be a prefix
     QString hrefString = href.toString();
@@ -227,7 +227,7 @@ namespace QgsWms
     doc.appendChild( wmsCapabilitiesElement );
 
     //INSERT Service
-    wmsCapabilitiesElement.appendChild( getServiceElement( doc, project, version, request ) );
+    wmsCapabilitiesElement.appendChild( getServiceElement( doc, project, version, request, serverIface->serverSettings() ) );
 
     //wms:Capability element
     QDomElement capabilityElement = getCapabilityElement( doc, project, version, request, projectSettings, serverIface );
@@ -255,7 +255,7 @@ namespace QgsWms
   }
 
   QDomElement getServiceElement( QDomDocument &doc, const QgsProject *project, const QString &version,
-                                 const QgsServerRequest &request )
+                                 const QgsServerRequest &request, const QgsServerSettings *serverSettings )
   {
     //Service element
     QDomElement serviceElem = doc.createElement( QStringLiteral( "Service" ) );
@@ -286,7 +286,7 @@ namespace QgsWms
     QString onlineResource = QgsServerProjectUtils::owsServiceOnlineResource( *project );
     if ( onlineResource.isEmpty() )
     {
-      onlineResource = serviceUrl( request, project ).toString();
+      onlineResource = serviceUrl( request, project, serverSettings ).toString();
     }
     QDomElement onlineResourceElem = doc.createElement( QStringLiteral( "OnlineResource" ) );
     onlineResourceElem.setAttribute( QStringLiteral( "xmlns:xlink" ), QStringLiteral( "http://www.w3.org/1999/xlink" ) );
@@ -421,7 +421,7 @@ namespace QgsWms
     QgsServerRequest::Parameters parameters = request.parameters();
 
     // Get service URL
-    QUrl href = serviceUrl( request, project );
+    QUrl href = serviceUrl( request, project, serverIface->serverSettings() );
 
     //href needs to be a prefix
     QString hrefString = href.toString();
@@ -1110,7 +1110,7 @@ namespace QgsWms
           }
 
           // add details about supported styles of the layer
-          appendLayerStyles( doc, layerElem, l, project, version, request );
+          appendLayerStyles( doc, layerElem, l, project, version, request, serverIface->serverSettings() );
 
           //min/max scale denominatorScaleBasedVisibility
           if ( l->hasScaleBasedVisibility() )
@@ -1296,10 +1296,10 @@ namespace QgsWms
     }
 
     void appendLayerStyles( QDomDocument &doc, QDomElement &layerElem, QgsMapLayer *currentLayer,
-                            const QgsProject *project, const QString &version, const QgsServerRequest &request )
+                            const QgsProject *project, const QString &version, const QgsServerRequest &request, const QgsServerSettings *settings )
     {
       // Get service URL
-      QUrl href = serviceUrl( request, project );
+      QUrl href = serviceUrl( request, project, settings );
 
       //href needs to be a prefix
       QString hrefString = href.toString();

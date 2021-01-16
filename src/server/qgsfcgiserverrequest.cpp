@@ -211,7 +211,22 @@ void QgsFcgiServerRequest::printRequestInfos( const QUrl &url )
     QStringLiteral( "NO_PROXY" ),
     QStringLiteral( "HTTP_AUTHORIZATION" ),
     QStringLiteral( "QGIS_PROJECT_FILE" ),
-    QStringLiteral( "QGIS_SERVER_IGNORE_BAD_LAYERS" )
+    QStringLiteral( "QGIS_SERVER_IGNORE_BAD_LAYERS" ),
+    QStringLiteral( "QGIS_SERVER_SERVICE_URL" ),
+    QStringLiteral( "QGIS_SERVER_WMS_SERVICE_URL" ),
+    QStringLiteral( "QGIS_SERVER_WFS_SERVICE_URL" ),
+    QStringLiteral( "QGIS_SERVER_WMTS_SERVICE_URL" ),
+    QStringLiteral( "QGIS_SERVER_WCS_SERVICE_URL" ),
+    QStringLiteral( "HTTP_X_QGIS_SERVICE_URL" ),
+    QStringLiteral( "HTTP_X_QGIS_WMS_SERVICE_URL" ),
+    QStringLiteral( "HTTP_X_QGIS_WFS_SERVICE_URL" ),
+    QStringLiteral( "HTTP_X_QGIS_WCS_SERVICE_URL" ),
+    QStringLiteral( "HTTP_X_QGIS_WMTS_SERVICE_URL" ),
+    QStringLiteral( "HTTP_FORWARDED" ),
+    QStringLiteral( "HTTP_X_FORWARDED_HOST" ),
+    QStringLiteral( "HTTP_X_FORWARDED_PROTO" ),
+    QStringLiteral( "HTTP_HOST" ),
+    QStringLiteral( "SERVER_PROTOCOL" )
   };
 
   QgsMessageLog::logMessage( QStringLiteral( "Request URL: %2" ).arg( url.url() ), QStringLiteral( "Server" ), Qgis::Info );

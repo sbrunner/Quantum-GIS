@@ -17,6 +17,7 @@
 
 #include "qgsserverprojectutils.h"
 #include "qgsproject.h"
+#include "qgsmessagelog.h"
 
 double  QgsServerProjectUtils::ceilWithPrecision( double number, int places )
 {
@@ -314,9 +315,114 @@ QStringList QgsServerProjectUtils::wmsOutputCrsList( const QgsProject &project )
   return crsList;
 }
 
-QString QgsServerProjectUtils::wmsServiceUrl( const QgsProject &project )
+QString QgsServerProjectUtils::serviceUrl( const QString &service, const QgsServerRequest &request, const QgsServerSettings *settings )
 {
-  return project.readEntry( QStringLiteral( "WMSUrl" ), QStringLiteral( "/" ), "" );
+  QString serviceUpper = service.toUpper();
+  QString url = settings->serviceUrl( serviceUpper );
+  if ( ! url.isEmpty() )
+  {
+    return url;
+  }
+
+  QgsServerRequest::Header header = QgsServerRequest::X_QGIS_SERVICE_URL;
+  if ( serviceUpper == QStringLiteral( "WMS" ) )
+  {
+    header = QgsServerRequest::X_QGIS_WMS_SERVICE_URL;
+  }
+  else if ( serviceUpper == QStringLiteral( "WFS" ) )
+  {
+    header = QgsServerRequest::X_QGIS_WFS_SERVICE_URL;
+  }
+  else if ( serviceUpper == QStringLiteral( "WCS" ) )
+  {
+    header = QgsServerRequest::X_QGIS_WCS_SERVICE_URL;
+  }
+  else if ( serviceUpper == QStringLiteral( "WMTS" ) )
+  {
+    header = QgsServerRequest::X_QGIS_WMTS_SERVICE_URL;
+  }
+  url = request.headerEnum( header );
+  if ( ! url.isEmpty() )
+  {
+    return url;
+  }
+  url = request.headerEnum( QgsServerRequest::X_QGIS_SERVICE_URL );
+  if ( ! url.isEmpty() )
+  {
+    return url;
+  }
+
+  QString proto;
+  QString host;
+
+  QString forwarded = request.headerEnum( QgsServerRequest::FORWARDED );
+  if ( ! forwarded.isEmpty() )
+  {
+    forwarded = forwarded.split( QLatin1Char( ',' ) )[0];
+    QStringList elements = forwarded.split( ';' );
+    foreach ( QString element, elements )
+    {
+      QStringList splited_element = element.trimmed().split( QLatin1Char( '=' ) );
+      if ( splited_element[0] == "host" )
+      {
+        host = splited_element[1];
+      }
+      if ( splited_element[0] == "proto" )
+      {
+        proto = splited_element[1];
+      }
+    }
+  }
+  if ( host.isEmpty() )
+  {
+    host = request.headerEnum( QgsServerRequest::X_FORWARDED_HOST );
+    if ( ! proto.isEmpty() )
+    {
+      proto = request.headerEnum( QgsServerRequest::X_FORWARDED_PROTO );
+    }
+  }
+  if ( host.isEmpty() )
+  {
+    host = request.headerEnum( QgsServerRequest::HOST );
+    if ( ! host.isEmpty() )
+    {
+      host = settings->serverName();
+    }
+    proto = settings->serverProtocol();
+    if ( ! proto.isEmpty() )
+    {
+      proto = proto.split( '/' )[0].toLower();
+    }
+  }
+  if ( proto.isEmpty() )
+  {
+    proto = QStringLiteral( "http" );
+  }
+  if ( host.isEmpty() )
+  {
+    host = QStringLiteral( "localhost" );
+  }
+
+  QString path = request.scriptName();
+  // https://docs.qgis.org/3.16/en/docs/server_manual/services.html#wms-map
+  QString map = request.parameter( QStringLiteral( "MAP" ) );
+
+  QUrlQuery urlQuery( QStringLiteral( "%1://%2%3" ).arg( proto ).arg( host ).arg( path ) );
+  if ( ! map.isEmpty() )
+  {
+    urlQuery.addQueryItem( QStringLiteral( "MAP" ), map );
+  }
+  return urlQuery.toString();
+}
+
+QString QgsServerProjectUtils::wmsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings *settings )
+{
+  QString url = project.readEntry( QStringLiteral( "WMSUrl" ), QStringLiteral( "/" ), "" );
+  if ( url.isEmpty() )
+  {
+    url = serviceUrl( QStringLiteral( "WMS" ), request, settings );
+  }
+  return url;
 }
 
 QString QgsServerProjectUtils::wmsRootName( const QgsProject &project )
@@ -345,9 +451,14 @@ QgsRectangle QgsServerProjectUtils::wmsExtent( const QgsProject &project )
   return QgsRectangle( xmin, ymin, xmax, ymax );
 }
 
-QString QgsServerProjectUtils::wfsServiceUrl( const QgsProject &project )
+QString QgsServerProjectUtils::wfsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings *settings )
 {
-  return project.readEntry( QStringLiteral( "WFSUrl" ), QStringLiteral( "/" ), "" );
+  QString url = project.readEntry( QStringLiteral( "WFSUrl" ), QStringLiteral( "/" ), "" );
+  if ( url.isEmpty() )
+  {
+    url = serviceUrl( QStringLiteral( "WFS" ), request, settings );
+  }
+  return url;
 }
 
 QStringList QgsServerProjectUtils::wfsLayerIds( const QgsProject &project )
@@ -375,9 +486,14 @@ QStringList QgsServerProjectUtils::wfstDeleteLayerIds( const QgsProject &project
   return project.readListEntry( QStringLiteral( "WFSTLayers" ), QStringLiteral( "Delete" ) );
 }
 
-QString QgsServerProjectUtils::wcsServiceUrl( const QgsProject &project )
+QString QgsServerProjectUtils::wcsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings *settings )
 {
-  return project.readEntry( QStringLiteral( "WCSUrl" ), QStringLiteral( "/" ), "" );
+  QString url = project.readEntry( QStringLiteral( "WCSUrl" ), QStringLiteral( "/" ), "" );
+  if ( url.isEmpty() )
+  {
+    url = serviceUrl( QStringLiteral( "WCS" ), request, settings );
+  }
+  return url;
 }
 
 QStringList QgsServerProjectUtils::wcsLayerIds( const QgsProject &project )
@@ -385,7 +501,12 @@ QStringList QgsServerProjectUtils::wcsLayerIds( const QgsProject &project )
   return project.readListEntry( QStringLiteral( "WCSLayers" ), QStringLiteral( "/" ) );
 }
 
-QString QgsServerProjectUtils::wmtsServiceUrl( const QgsProject &project )
+QString QgsServerProjectUtils::wmtsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings *settings )
 {
-  return project.readEntry( QStringLiteral( "WMTSUrl" ), QStringLiteral( "/" ), "" );
+  QString url = project.readEntry( QStringLiteral( "WMTSUrl" ), QStringLiteral( "/" ), "" );
+  if ( url.isEmpty() )
+  {
+    url = serviceUrl( QStringLiteral( "WMTS" ), request, settings );
+  }
+  return url;
 }

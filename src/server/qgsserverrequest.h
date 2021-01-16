@@ -58,6 +58,24 @@ class SERVER_EXPORT QgsServerRequest
     };
     Q_ENUM( Method )
 
+    /**
+     * HTTP Headers used for the request
+     */
+    enum Header
+    {
+      HOST, // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host
+      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
+      // https://tools.ietf.org/html/rfc7239
+      FORWARDED,
+      X_FORWARDED_HOST, // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Host
+      X_FORWARDED_PROTO, // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto
+      X_QGIS_SERVICE_URL, // The QGIS service URL
+      X_QGIS_WMS_SERVICE_URL, // The QGIS WMS service URL
+      X_QGIS_WFS_SERVICE_URL, // The QGIS WFS service URL
+      X_QGIS_WCS_SERVICE_URL, // The QGIS WCS service URL
+      X_QGIS_WMTS_SERVICE_URL, // The QGIS WMTS service URL
+    };
+    Q_ENUM( Header )
 
     /**
      * Constructor
@@ -139,6 +157,14 @@ class SERVER_EXPORT QgsServerRequest
     QString header( const QString &name ) const;
 
     /**
+     * Returns the header value, From the enum, also use the standad cgi environment variables
+     * \param header the header
+     * \return the header value or an empty string
+     * \since QGIS 3.20
+     */
+    QString headerEnum( const QgsServerRequest::Header header ) const;
+
+    /**
      * Set an header
      * \param name
      * \param value
@@ -189,6 +215,13 @@ class SERVER_EXPORT QgsServerRequest
      */
     const QString queryParameter( const QString &name, const QString &defaultValue = QString( ) ) const;
 
+    /**
+     * Returns the script protocol.
+     * See also https://tools.ietf.org/html/rfc3875#section-4.1.13
+     * \since QGIS 3.20
+     */
+    const QString scriptName() const;
+
   protected:
 
     /**
@@ -210,6 +243,7 @@ class SERVER_EXPORT QgsServerRequest
     // to support lazy initialization
     mutable Headers mHeaders;
     QgsServerParameters mParams;
+    QMap< QgsServerRequest::Header, QString > mHeaderFromEnum;
 };
 
 #endif

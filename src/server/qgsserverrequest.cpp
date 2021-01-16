@@ -23,6 +23,15 @@
 QgsServerRequest::QgsServerRequest( const QString &url, Method method, const Headers &headers )
   : QgsServerRequest( QUrl( url ), method, headers )
 {
+  mHeaderFromEnum[QgsServerRequest::HOST] = QStringLiteral( "Host" );
+  mHeaderFromEnum[QgsServerRequest::FORWARDED] = QStringLiteral( "Forwarded" );
+  mHeaderFromEnum[QgsServerRequest::X_FORWARDED_HOST] = QStringLiteral( "X-Forwarded-Host" );
+  mHeaderFromEnum[QgsServerRequest::X_FORWARDED_PROTO] = QStringLiteral( "X-Forwarded-Proto" );
+  mHeaderFromEnum[QgsServerRequest::X_QGIS_SERVICE_URL] = QStringLiteral( "X-Qgis-Service-Url" );
+  mHeaderFromEnum[QgsServerRequest::X_QGIS_WMS_SERVICE_URL] = QStringLiteral( "X-Qgis-Wms-Service-Url" );
+  mHeaderFromEnum[QgsServerRequest::X_QGIS_WFS_SERVICE_URL] = QStringLiteral( "X-Qgis-Wfs-Service-Url" );
+  mHeaderFromEnum[QgsServerRequest::X_QGIS_WCS_SERVICE_URL] = QStringLiteral( "X-Qgis-Wcs-Service-Url" );
+  mHeaderFromEnum[QgsServerRequest::X_QGIS_WMTS_SERVICE_URL] = QStringLiteral( "X-Qgis-Wmts-Service-Url" );
 }
 
 QgsServerRequest::QgsServerRequest( const QUrl &url, Method method, const Headers &headers )
@@ -45,6 +54,22 @@ QString QgsServerRequest::header( const QString &name ) const
   return mHeaders.value( name );
 }
 
+QString QgsServerRequest::headerEnum( const QgsServerRequest::Header header ) const
+{
+  QString headerName = mHeaderFromEnum[header];
+
+  // Get from internal dictionary
+  QString result = this->header( headerName );
+
+  // Or from standard environmant variable
+  // https://tools.ietf.org/html/rfc3875#section-4.1.18
+  if ( result.isEmpty() )
+  {
+    result = qgetenv( QStringLiteral( "HTTP_%1" ).arg(
+                        headerName.toUpper().replace( QLatin1Char( '-' ), QLatin1Char( '_' ) ) ).toStdString().c_str() );
+  }
+  return result;
+}
 
 void QgsServerRequest::setHeader( const QString &name, const QString &value )
 {
@@ -55,7 +80,6 @@ QMap<QString, QString> QgsServerRequest::headers() const
 {
   return mHeaders;
 }
-
 
 void QgsServerRequest::removeHeader( const QString &name )
 {
@@ -140,3 +164,7 @@ const QString QgsServerRequest::queryParameter( const QString &name, const QStri
   return QUrl::fromPercentEncoding( QUrlQuery( mUrl ).queryItemValue( name ).toUtf8() );
 }
 
+const QString QgsServerRequest::scriptName() const
+{
+  return qgetenv( "SCRIPT_NAME" );
+}
