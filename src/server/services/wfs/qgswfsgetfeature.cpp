@@ -1034,7 +1034,7 @@ namespace QgsWfs
           response.setHeader( "Content-Type", "text/xml; subtype=gml/3.1.1; charset=utf-8" );
 
         //Prepare url
-        QString hrefString = serviceUrl( request, project, settings );
+        QString hrefString = serviceUrl( request, project, *settings );
 
         QUrl mapUrl( hrefString );
 
@@ -1136,7 +1136,7 @@ namespace QgsWfs
           response.setHeader( "Content-Type", "text/xml; subtype=gml/3.1.1; charset=utf-8" );
 
         //Prepare url
-        QString hrefString = serviceUrl( request, project, settings );
+        QString hrefString = serviceUrl( request, project, *settings );
 
         QUrl mapUrl( hrefString );
 

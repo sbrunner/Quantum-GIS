@@ -349,7 +349,7 @@ namespace QgsWfs
     QDomElement oprationsElement = doc.createElement( QStringLiteral( "ows:OperationsMetadata" ) );
 
     // Prepare url
-    QString hrefString = serviceUrl( request, project, settings );
+    QString hrefString = serviceUrl( request, project, *settings );
 
     QDomElement operationElement = doc.createElement( QStringLiteral( "ows:Operation" ) );
     QDomElement dcpElement = doc.createElement( QStringLiteral( "ows:DCP" ) );

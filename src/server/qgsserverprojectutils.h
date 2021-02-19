@@ -328,7 +328,7 @@ namespace QgsServerProjectUtils
    * \param settings the server settings
    * \returns url to use for this service
    */
-  SERVER_EXPORT QString wmsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings *settings = nullptr );
+  SERVER_EXPORT QString wmsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings &settings = QgsServerSettings() );
 
   /**
    * Returns the WMS root layer name defined in a QGIS project.
@@ -365,7 +365,7 @@ namespace QgsServerProjectUtils
    * \param settings the server settings
    * \returns url to use for this service
    */
-  SERVER_EXPORT QString wfsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings *settings = NULL );
+  SERVER_EXPORT QString wfsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings &settings = QgsServerSettings() );
 
   /**
    * Returns the Layer ids list defined in a QGIS project as published in WFS.
@@ -411,7 +411,7 @@ namespace QgsServerProjectUtils
    * \param settings the server settings
    * \returns url to use for this service
    */
-  SERVER_EXPORT QString wcsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings *settings = NULL );
+  SERVER_EXPORT QString wcsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings &settings = QgsServerSettings() );
 
   /**
    * Returns the Layer ids list defined in a QGIS project as published in WCS.
@@ -428,7 +428,7 @@ namespace QgsServerProjectUtils
    * \returns url to use for this service
    * \since QGIS 3.4
    */
-  SERVER_EXPORT QString wmtsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings *settings = NULL );
+  SERVER_EXPORT QString wmtsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings &settings = QgsServerSettings() );
 
   /**
    * Returns the service url defined in the environment variable or with HTTP header.
@@ -438,7 +438,7 @@ namespace QgsServerProjectUtils
    * \returns url to use for this service
    * \since QGIS 3.20
    */
-  SERVER_EXPORT QString serviceUrl( const QString &service, const QgsServerRequest &request, const QgsServerSettings *settings );
+  SERVER_EXPORT QString serviceUrl( const QString &service, const QgsServerRequest &request, const QgsServerSettings &settings );
 };
 
 #endif

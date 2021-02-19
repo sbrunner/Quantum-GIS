@@ -106,7 +106,7 @@ namespace QgsWms
     QgsCapabilitiesCache *capabilitiesCache = serverIface->capabilitiesCache();
     QStringList cacheKeyList;
     cacheKeyList << ( projectSettings ? QStringLiteral( "projectSettings" ) : version );
-    cacheKeyList << QgsServerProjectUtils::serviceUrl( request.serverParameters().service(), request, serverIface->serverSettings() );
+    cacheKeyList << QgsServerProjectUtils::serviceUrl( request.serverParameters().service(), request, *serverIface->serverSettings() );
     bool cache = true;
 
 #ifdef HAVE_SERVER_PYTHON_PLUGINS
@@ -173,7 +173,7 @@ namespace QgsWms
     QDomElement wmsCapabilitiesElement;
 
     // Get service URL
-    QUrl href = serviceUrl( request, project, serverIface->serverSettings() );
+    QUrl href = serviceUrl( request, project, *serverIface->serverSettings() );
 
     //href needs to be a prefix
     QString hrefString = href.toString();
@@ -286,7 +286,7 @@ namespace QgsWms
     QString onlineResource = QgsServerProjectUtils::owsServiceOnlineResource( *project );
     if ( onlineResource.isEmpty() )
     {
-      onlineResource = serviceUrl( request, project, serverSettings ).toString();
+      onlineResource = serviceUrl( request, project, *serverSettings ).toString();
     }
     QDomElement onlineResourceElem = doc.createElement( QStringLiteral( "OnlineResource" ) );
     onlineResourceElem.setAttribute( QStringLiteral( "xmlns:xlink" ), QStringLiteral( "http://www.w3.org/1999/xlink" ) );
@@ -421,7 +421,7 @@ namespace QgsWms
     QgsServerRequest::Parameters parameters = request.parameters();
 
     // Get service URL
-    QUrl href = serviceUrl( request, project, serverIface->serverSettings() );
+    QUrl href = serviceUrl( request, project, *serverIface->serverSettings() );
 
     //href needs to be a prefix
     QString hrefString = href.toString();
@@ -1299,7 +1299,7 @@ namespace QgsWms
                             const QgsProject *project, const QString &version, const QgsServerRequest &request, const QgsServerSettings *settings )
     {
       // Get service URL
-      QUrl href = serviceUrl( request, project, settings );
+      QUrl href = serviceUrl( request, project, *settings );
 
       //href needs to be a prefix
       QString hrefString = href.toString();

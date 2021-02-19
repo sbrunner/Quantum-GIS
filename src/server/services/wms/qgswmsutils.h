@@ -51,7 +51,7 @@ namespace QgsWms
   /**
    * Returns WMS service URL
    */
-  QUrl serviceUrl( const QgsServerRequest &request, const QgsProject *project, const QgsServerSettings *settings );
+  QUrl serviceUrl( const QgsServerRequest &request, const QgsProject *project, const QgsServerSettings &settings );
 
   /**
    * Parse image format parameter

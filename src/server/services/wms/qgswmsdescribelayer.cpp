@@ -87,11 +87,11 @@ namespace QgsWms
 
     // get the wms service url defined in project or keep the one from the
     // request url
-    QString wmsHrefString = serviceUrl( request, project, serverIface->serverSettings() ).toString();
+    QString wmsHrefString = serviceUrl( request, project, *serverIface->serverSettings() ).toString();
 
     // get the wfs service url defined in project or take the same as the
     // wms service url
-    QString wfsHrefString = QgsServerProjectUtils::wfsServiceUrl( *project, request, serverIface->serverSettings() );
+    QString wfsHrefString = QgsServerProjectUtils::wfsServiceUrl( *project, request, *serverIface->serverSettings() );
     if ( wfsHrefString.isEmpty() )
     {
       wfsHrefString = wmsHrefString;
@@ -99,7 +99,7 @@ namespace QgsWms
 
     // get the wcs service url defined in project or take the same as the
     // wms service url
-    QString wcsHrefString = QgsServerProjectUtils::wcsServiceUrl( *project, request, serverIface->serverSettings() );
+    QString wcsHrefString = QgsServerProjectUtils::wcsServiceUrl( *project, request, *serverIface->serverSettings() );
     if ( wcsHrefString.isEmpty() )
     {
       wcsHrefString = wmsHrefString;

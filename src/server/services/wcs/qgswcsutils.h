@@ -51,7 +51,7 @@ namespace QgsWcs
   /**
    * Service URL string
    */
-  QString serviceUrl( const QgsServerRequest &request, const QgsProject *project, const QgsServerSettings *settings );
+  QString serviceUrl( const QgsServerRequest &request, const QgsProject *project, const QgsServerSettings &settings );
 
   /**
    * Parse bounding box

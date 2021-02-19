@@ -315,16 +315,13 @@ QStringList QgsServerProjectUtils::wmsOutputCrsList( const QgsProject &project )
   return crsList;
 }
 
-QString QgsServerProjectUtils::serviceUrl( const QString &service, const QgsServerRequest &request, const QgsServerSettings *settings )
+QString QgsServerProjectUtils::serviceUrl( const QString &service, const QgsServerRequest &request, const QgsServerSettings &settings )
 {
   const QString serviceUpper = service.toUpper();
-  if ( settings )
+  QString url = settings.serviceUrl( serviceUpper );
+  if ( ! url.isEmpty() )
   {
-    QString url = settings->serviceUrl( serviceUpper );
-    if ( ! url.isEmpty() )
-    {
-      return url;
-    }
+    return url;
   }
 
   QString header = QgsServerRequest::X_QGIS_SERVICE_URL;
@@ -344,7 +341,7 @@ QString QgsServerProjectUtils::serviceUrl( const QString &service, const QgsServ
   {
     header = QgsServerRequest::X_QGIS_WMTS_SERVICE_URL;
   }
-  QString url = request.header( header );
+  url = request.header( header );
   if ( ! url.isEmpty() )
   {
     return url;
@@ -424,7 +421,7 @@ QString QgsServerProjectUtils::serviceUrl( const QString &service, const QgsServ
   return urlQUrl.url();
 }
 
-QString QgsServerProjectUtils::wmsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings *settings )
+QString QgsServerProjectUtils::wmsServiceUrl( const QgsProject &project, const  QgsServerRequest &request, const QgsServerSettings &settings )
 {
   QString url = project.readEntry( QStringLiteral( "WMSUrl" ), QStringLiteral( "/" ), "" );
   if ( url.isEmpty() )
@@ -460,7 +457,7 @@ QgsRectangle QgsServerProjectUtils::wmsExtent( const QgsProject &project )
   return QgsRectangle( xmin, ymin, xmax, ymax );
 }
 
-QString QgsServerProjectUtils::wfsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings *settings )
+QString QgsServerProjectUtils::wfsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings &settings )
 {
   QString url = project.readEntry( QStringLiteral( "WFSUrl" ), QStringLiteral( "/" ), "" );
   if ( url.isEmpty() )
@@ -495,7 +492,7 @@ QStringList QgsServerProjectUtils::wfstDeleteLayerIds( const QgsProject &project
   return project.readListEntry( QStringLiteral( "WFSTLayers" ), QStringLiteral( "Delete" ) );
 }
 
-QString QgsServerProjectUtils::wcsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings *settings )
+QString QgsServerProjectUtils::wcsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings &settings )
 {
   QString url = project.readEntry( QStringLiteral( "WCSUrl" ), QStringLiteral( "/" ), "" );
   if ( url.isEmpty() )
@@ -510,7 +507,7 @@ QStringList QgsServerProjectUtils::wcsLayerIds( const QgsProject &project )
   return project.readListEntry( QStringLiteral( "WCSLayers" ), QStringLiteral( "/" ) );
 }
 
-QString QgsServerProjectUtils::wmtsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings *settings )
+QString QgsServerProjectUtils::wmtsServiceUrl( const QgsProject &project, const QgsServerRequest &request, const QgsServerSettings &settings )
 {
   QString url = project.readEntry( QStringLiteral( "WMTSUrl" ), QStringLiteral( "/" ), "" );
   if ( url.isEmpty() )

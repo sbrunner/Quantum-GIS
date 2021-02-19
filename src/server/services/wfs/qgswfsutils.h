@@ -46,7 +46,7 @@ namespace QgsWfs
   /**
    * Service URL string
    */
-  QString serviceUrl( const QgsServerRequest &request, const QgsProject *project, const QgsServerSettings *settings );
+  QString serviceUrl( const QgsServerRequest &request, const QgsProject *project, const QgsServerSettings &settings );
 
   /**
    * Returns typename from vector layer

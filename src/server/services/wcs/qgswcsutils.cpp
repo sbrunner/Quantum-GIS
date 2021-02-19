@@ -251,7 +251,7 @@ namespace QgsWcs
   }
 
 
-  QString serviceUrl( const QgsServerRequest &request, const QgsProject *project, const QgsServerSettings *settings )
+  QString serviceUrl( const QgsServerRequest &request, const QgsProject *project, const QgsServerSettings &settings )
   {
     static QSet< QString > sFilter
     {

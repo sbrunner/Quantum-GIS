@@ -30,7 +30,7 @@
 
 namespace QgsWms
 {
-  QUrl serviceUrl( const QgsServerRequest &request, const QgsProject *project, const QgsServerSettings *settings )
+  QUrl serviceUrl( const QgsServerRequest &request, const QgsProject *project, const QgsServerSettings &settings )
   {
     QUrl href;
     href.setUrl( QgsServerProjectUtils::wmsServiceUrl( project ? *project : *QgsProject::instance(), request, settings ) );

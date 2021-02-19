@@ -355,7 +355,7 @@ Returns the restricted composer list.
 :return: the restricted composer list if defined in project.
 %End
 
-  QString wmsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings *settings = 0 );
+  QString wmsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings &settings = QgsServerSettings() );
 %Docstring
 Returns the WMS service url.
 
@@ -402,7 +402,7 @@ Returns the WMS Extent restriction.
 :return: the WMS Extent restriction.
 %End
 
-  QString wfsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings *settings = NULL );
+  QString wfsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings &settings = QgsServerSettings() );
 %Docstring
 Returns the WFS service url.
 
@@ -460,7 +460,7 @@ Returns the Layer ids list defined in a QGIS project as published as WFS-T with 
 :return: the Layer ids list.
 %End
 
-  QString wcsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings *settings = NULL );
+  QString wcsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings &settings = QgsServerSettings() );
 %Docstring
 Returns the WCS service url.
 
@@ -480,7 +480,7 @@ Returns the Layer ids list defined in a QGIS project as published in WCS.
 :return: the Layer ids list.
 %End
 
-  QString wmtsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings *settings = NULL );
+  QString wmtsServiceUrl( const QgsProject &project, const QgsServerRequest &request = QgsServerRequest(), const QgsServerSettings &settings = QgsServerSettings() );
 %Docstring
 Returns the WMTS service url.
 
@@ -493,7 +493,7 @@ Returns the WMTS service url.
 .. versionadded:: 3.4
 %End
 
-  QString serviceUrl( const QString &service, const QgsServerRequest &request, const QgsServerSettings *settings );
+  QString serviceUrl( const QString &service, const QgsServerRequest &request, const QgsServerSettings &settings );
 %Docstring
 Returns the service url defined in the environment variable or with HTTP header.
 

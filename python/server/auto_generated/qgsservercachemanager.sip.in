@@ -24,7 +24,7 @@ A helper class that centralizes caches accesses given by all the server cache fi
 #include "qgsservercachemanager.h"
 %End
   public:
-    QgsServerCacheManager( const QgsServerSettings *settings );
+    QgsServerCacheManager( const QgsServerSettings &settings );
 %Docstring
 Constructor
 %End

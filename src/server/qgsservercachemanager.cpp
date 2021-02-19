@@ -21,13 +21,14 @@
 #include "qgsmessagelog.h"
 #include "qgis.h"
 
-QgsServerCacheManager::QgsServerCacheManager( const QgsServerSettings *settings ):
+QgsServerCacheManager::QgsServerCacheManager( const QgsServerSettings &settings ):
   mSettings( settings )
 {
   mPluginsServerCaches.reset( new QgsServerCacheFilterMap() );
 }
 
-QgsServerCacheManager::QgsServerCacheManager( const QgsServerCacheManager &copy )
+QgsServerCacheManager::QgsServerCacheManager( const QgsServerCacheManager &copy ):
+  mSettings( copy.mSettings )
 {
   if ( copy.mPluginsServerCaches )
   {

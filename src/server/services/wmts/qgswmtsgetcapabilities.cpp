@@ -273,7 +273,7 @@ namespace QgsWmts
     dcpElement.appendChild( httpElement );
 
     // Get service URL
-    const QUrl href = serviceUrl( request, project, settings );
+    const QUrl href = serviceUrl( request, project, *settings );
 
     //href needs to be a prefix
     QString hrefString = href.toString();

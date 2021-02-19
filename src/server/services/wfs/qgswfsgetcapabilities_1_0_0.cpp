@@ -216,7 +216,7 @@ namespace QgsWfs
       dcpTypeElement.appendChild( httpElement );
 
       //Prepare url
-      QString hrefString = serviceUrl( request, project, settings );
+      QString hrefString = serviceUrl( request, project, *settings );
 
       //only Get supported for the moment
       QDomElement getElement = doc.createElement( QStringLiteral( "Get" )/*wfs:Get*/ );
