@@ -324,29 +324,29 @@ QString QgsServerProjectUtils::serviceUrl( const QString &service, const QgsServ
     return url;
   }
 
-  QString header = QgsServerRequest::X_QGIS_SERVICE_URL;
+  QgsServerRequest::RequestHeader header = QgsServerRequest::RequestHeader::X_QGIS_SERVICE_URL;
   if ( serviceUpper == QStringLiteral( "WMS" ) )
   {
-    header = QgsServerRequest::X_QGIS_WMS_SERVICE_URL;
+    header = QgsServerRequest::RequestHeader::X_QGIS_WMS_SERVICE_URL;
   }
   else if ( serviceUpper == QStringLiteral( "WFS" ) )
   {
-    header = QgsServerRequest::X_QGIS_WFS_SERVICE_URL;
+    header = QgsServerRequest::RequestHeader::X_QGIS_WFS_SERVICE_URL;
   }
   else if ( serviceUpper == QStringLiteral( "WCS" ) )
   {
-    header = QgsServerRequest::X_QGIS_WCS_SERVICE_URL;
+    header = QgsServerRequest::RequestHeader::X_QGIS_WCS_SERVICE_URL;
   }
   else if ( serviceUpper == QStringLiteral( "WMTS" ) )
   {
-    header = QgsServerRequest::X_QGIS_WMTS_SERVICE_URL;
+    header = QgsServerRequest::RequestHeader::X_QGIS_WMTS_SERVICE_URL;
   }
   url = request.header( header );
   if ( ! url.isEmpty() )
   {
     return url;
   }
-  url = request.header( QgsServerRequest::X_QGIS_SERVICE_URL );
+  url = request.header( QgsServerRequest::RequestHeader::X_QGIS_SERVICE_URL );
   if ( ! url.isEmpty() )
   {
     return url;
@@ -376,13 +376,13 @@ QString QgsServerProjectUtils::serviceUrl( const QString &service, const QgsServ
 
   if ( host.isEmpty() )
   {
-    host = request.header( QgsServerRequest::X_FORWARDED_HOST );
-    proto = request.header( QgsServerRequest::X_FORWARDED_PROTO );
+    host = request.header( QgsServerRequest::RequestHeader::X_FORWARDED_HOST );
+    proto = request.header( QgsServerRequest::RequestHeader::X_FORWARDED_PROTO );
   }
 
   if ( host.isEmpty() )
   {
-    host = request.header( QgsServerRequest::HOST );
+    host = request.header( QgsServerRequest::RequestHeader::HOST );
   }
 
   QUrl urlQUrl = request.baseUrl();

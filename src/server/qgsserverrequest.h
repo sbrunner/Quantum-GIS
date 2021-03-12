@@ -59,27 +59,33 @@ class SERVER_EXPORT QgsServerRequest
     Q_ENUM( Method )
 
     /**
-     * HTTP Headers used for the request
+     * The internal HTTP Header used for the request as enum
      */
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host
-    static const QString HOST;
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
-    // https://tools.ietf.org/html/rfc7239
-    static const QString FORWARDED;
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Host
-    static const QString X_FORWARDED_HOST;
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto
-    static const QString X_FORWARDED_PROTO;
-    // The QGIS service URL
-    static const QString X_QGIS_SERVICE_URL;
-    // The QGIS WMS service URL
-    static const QString X_QGIS_WMS_SERVICE_URL;
-    // The QGIS WFS service URL
-    static const QString X_QGIS_WFS_SERVICE_URL;
-    // The QGIS WCS service URL
-    static const QString X_QGIS_WCS_SERVICE_URL;
-    // The QGIS WMTS service URL
-    static const QString X_QGIS_WMTS_SERVICE_URL;
+    enum RequestHeader
+    {
+      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host
+      HOST,
+      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
+      // https://tools.ietf.org/html/rfc7239
+      FORWARDED,
+      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For
+      X_FORWARDED_FOR,
+      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Host
+      X_FORWARDED_HOST,
+      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto
+      X_FORWARDED_PROTO,
+      // The QGIS service URL
+      X_QGIS_SERVICE_URL,
+      // The QGIS WMS service URL
+      X_QGIS_WMS_SERVICE_URL,
+      // The QGIS WFS service URL
+      X_QGIS_WFS_SERVICE_URL,
+      // The QGIS WCS service URL
+      X_QGIS_WCS_SERVICE_URL,
+      // The QGIS WMTS service URL
+      X_QGIS_WMTS_SERVICE_URL,
+    };
+    Q_ENUM( RequestHeader )
 
     /**
      * Constructor
@@ -168,6 +174,13 @@ class SERVER_EXPORT QgsServerRequest
     virtual QString header( const QString &name ) const;
 
     /**
+     * Returns the header value
+     * \param headerEnum of the header
+     * \return the header value or an empty string
+     */
+    virtual QString header( const RequestHeader &headerEnum ) const;
+
+    /**
      * Set an header
      * \param name
      * \param value
@@ -181,9 +194,10 @@ class SERVER_EXPORT QgsServerRequest
     QMap<QString, QString> headers() const;
 
     /**
-    * Remove an header
-    * \param name
-    */
+     * Remove an header
+     * \param name
+     * \since QGIS 3.20
+     */
     void removeHeader( const QString &name );
 
     /**
@@ -259,6 +273,7 @@ class SERVER_EXPORT QgsServerRequest
     // to support lazy initialization
     mutable Headers mHeaders;
     QgsServerParameters mParams;
+    QMap<RequestHeader, QString> mRequestHeaderConv;
 };
 
 #endif
