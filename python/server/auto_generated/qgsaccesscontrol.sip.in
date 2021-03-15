@@ -129,7 +129,7 @@ Are we authorized to modify the following geometry
 :return: ``True`` if we are allowed to edit the feature
 %End
 
-    void fillCacheKey( QStringList &cacheKey ) const;
+    bool fillCacheKey( QStringList &cacheKey ) const;
 %Docstring
 Fill the capabilities caching key
 

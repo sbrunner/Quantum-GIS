@@ -148,7 +148,7 @@ class SERVER_EXPORT QgsAccessControl : public QgsFeatureFilterProvider
      * Fill the capabilities caching key
      * \param cacheKey the list to fill with a cache variant
      */
-    void fillCacheKey( QStringList &cacheKey ) const;
+    bool fillCacheKey( QStringList &cacheKey ) const;
 
     /**
      * Register an access control filter
